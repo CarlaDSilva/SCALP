@@ -2,184 +2,134 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Scalp">
+<meta name="theme-color" content="#086b6b">
+<link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <title>Scalp</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --teal-deep:   #086b6b;
-  --teal:        #0fa3a3;
-  --teal-light:  #3dcfcf;
-  --teal-pale:   #b2e8e8;
-  --teal-mist:   #e8f8f8;
-  --choc-dark:   #3b1800;
-  --choc:        #6b3000;
-  --choc-mid:    #9a4f18;
-  --choc-warm:   #c4723a;
-  --sand:        #f7ede0;
-  --white:       #ffffff;
-  --text-dark:   #162828;
-  --text-mid:    #3a5e5e;
-  --text-soft:   #7aaaaa;
-  --nav-h:       64px;
-  --sb:          env(safe-area-inset-bottom, 0px);
-  --st:          env(safe-area-inset-top, 0px);
+:root{
+  --teal-deep:#086b6b;--teal:#0fa3a3;--teal-light:#3dcfcf;--teal-pale:#b2e8e8;--teal-mist:#e8f8f8;
+  --choc:#6b3000;--choc-mid:#9a4f18;--choc-warm:#c4723a;
+  --text-dark:#162828;--text-mid:#3a5e5e;--text-soft:#7aaaaa;
+  --nav-h:60px;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:var(--teal-deep);}
-body{font-family:'Outfit',sans-serif;color:var(--text-dark);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+input,textarea{-webkit-user-select:text;user-select:text;}
+html{
+  height:100%;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;
+  touch-action:manipulation;          /* kill double-tap zoom */
+  overscroll-behavior:none;
+}
+body{
+  height:100%;overflow:hidden;
+  font-family:'Outfit',sans-serif;color:var(--text-dark);background:var(--teal-deep);
+  touch-action:manipulation;
+  position:fixed;width:100%;                 /* lock body, no rubber-band of whole page */
+}
+/* block pinch-zoom gesture */
+body{touch-action:pan-x pan-y;}
 
 /* SPLASH */
-#splash{
-  position:fixed;inset:0;z-index:999;
-  background:linear-gradient(150deg,var(--teal-deep) 0%,var(--teal) 60%,var(--teal-light) 100%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
-  transition:opacity 0.5s;
-}
+#splash{position:fixed;inset:0;z-index:999;background:linear-gradient(150deg,var(--teal-deep),var(--teal) 60%,var(--teal-light));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .45s ease;}
 #splash.gone{opacity:0;pointer-events:none;}
-.splash-follicle{width:80px;height:120px;position:relative;}
-.splash-logo{font-family:'Playfair Display',serif;font-size:32px;color:white;letter-spacing:1px;}
-.splash-sub{font-size:13px;color:rgba(255,255,255,0.65);letter-spacing:2px;text-transform:uppercase;}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-.splash-follicle svg{animation:pulse 2s infinite;}
+.sp-drop{width:88px;height:88px;}
+.sp-drop svg{width:100%;height:100%;overflow:visible;}
+.sp-path{stroke-dasharray:380;stroke-dashoffset:380;animation:draw 1.3s ease forwards;}
+.sp-wave{stroke-dasharray:90;stroke-dashoffset:90;animation:draw .7s ease .7s forwards;}
+@keyframes draw{to{stroke-dashoffset:0;}}
+.sp-dots{display:flex;gap:7px;}
+.sp-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.6);animation:bounce 1.2s infinite;}
+.sp-dots i:nth-child(2){animation-delay:.18s;}
+.sp-dots i:nth-child(3){animation-delay:.36s;}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-7px);opacity:1}}
 
 /* SHELL */
-.shell{display:flex;flex-direction:column;height:100%;height:-webkit-fill-available;background:var(--teal-mist);}
+.shell{display:flex;flex-direction:column;height:100%;background:var(--teal-mist);}
+.hdr{flex-shrink:0;background:linear-gradient(150deg,var(--teal-deep),var(--teal) 55%,var(--teal-light));padding:calc(max(46px,var(--st)) + 6px) 20px 24px;position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.05);top:-100px;right:-80px;}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.hdr-logo{width:30px;height:30px;}
+.hdr-add{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);}
+.hdr-add:active{background:rgba(255,255,255,.3);}
+.glass{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:16px 18px;backdrop-filter:blur(10px);}
+.s-lbl{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:4px;}
+.s-val{font-family:'Playfair Display',serif;font-size:31px;color:#fff;line-height:1;margin-bottom:2px;}
+.s-det{font-size:12px;color:rgba(255,255,255,.7);}
+.ptrack{margin-top:11px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;}
+.pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,rgba(255,255,255,.5),#fff);transition:width .9s cubic-bezier(.4,0,.2,1);}
 
-/* HEADER */
-.hdr{
-  flex-shrink:0;
-  background:linear-gradient(150deg,var(--teal-deep) 0%,var(--teal) 55%,var(--teal-light) 100%);
-  padding:calc(max(48px,var(--st)) + 8px) 20px 26px;
-  position:relative;overflow:hidden;
-}
-.hdr::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,0.05);top:-100px;right:-80px;pointer-events:none;}
-.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.hdr-left{display:flex;align-items:center;gap:10px;}
-.hdr-logo{font-family:'Playfair Display',serif;font-size:24px;color:white;letter-spacing:0.5px;}
-.hdr-follicle{width:28px;height:36px;}
-.hdr-add{
-  width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);
-  background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;backdrop-filter:blur(8px);
-}
-.hdr-add:active{background:rgba(255,255,255,0.28);}
-.status-glass{
-  background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.25);
-  border-radius:16px;padding:16px 18px;backdrop-filter:blur(10px);
-}
-.s-lbl{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:4px;}
-.s-val{font-family:'Playfair Display',serif;font-size:32px;color:white;line-height:1;margin-bottom:2px;}
-.s-det{font-size:12px;color:rgba(255,255,255,0.7);}
-.prog-track{margin-top:11px;height:5px;border-radius:99px;background:rgba(255,255,255,0.18);overflow:hidden;}
-.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,rgba(255,255,255,0.5),white);transition:width 0.9s cubic-bezier(.4,0,.2,1);}
-
-/* SCROLL */
-.scroll{
-  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
-  padding:14px 13px calc(14px + var(--nav-h) + var(--sb));
-  display:flex;flex-direction:column;gap:13px;
-}
+.scroll{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:14px 13px 16px;display:flex;flex-direction:column;gap:13px;min-height:0;}
 .scroll::-webkit-scrollbar{display:none;}
 
-/* NAV */
-.nav{
-  flex-shrink:0;background:white;border-top:1px solid #ddf0f0;
-  display:flex;height:calc(var(--nav-h) + var(--sb));padding-bottom:var(--sb);
-  box-shadow:0 -2px 16px rgba(8,107,107,0.09);z-index:50;
-}
-.nb{
-  flex:1;border:none;background:none;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding-top:4px;
-  color:var(--text-soft);font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;
-  transition:color 0.14s;
-}
+.nav{flex-shrink:0;background:#fff;border-top:1px solid #ddf0f0;display:flex;height:calc(var(--nav-h) + var(--sb));padding-bottom:var(--sb);box-shadow:0 -2px 16px rgba(8,107,107,.09);}
+.nb{flex:1;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text-soft);font-size:9.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:color .14s;height:var(--nav-h);}
 .nb.on{color:var(--teal-deep);}
 .nb svg{stroke-width:1.8;}
 
-/* TABS */
 .tab{display:none;flex-direction:column;gap:13px;}
 .tab.on{display:flex;}
-
-/* CARD */
-.card{background:white;border-radius:18px;box-shadow:0 2px 14px rgba(8,107,107,0.07);overflow:hidden;}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 14px rgba(8,107,107,.07);overflow:hidden;}
 .chd{padding:13px 17px 0;display:flex;align-items:center;gap:8px;}
 .cico{width:28px;height:28px;border-radius:7px;background:var(--teal-mist);display:flex;align-items:center;justify-content:center;}
 .cico svg{stroke:var(--teal-deep);}
 .clbl{font-size:10px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--text-soft);}
 .cbd{padding:13px 17px 17px;}
 
-/* ALERT */
-.alert{
-  background:linear-gradient(130deg,var(--choc) 0%,var(--choc-warm) 100%);
-  border-radius:16px;padding:14px 16px;color:white;
-  display:flex;align-items:center;gap:11px;
-  box-shadow:0 4px 16px rgba(107,48,0,0.25);
-}
+.alert{background:linear-gradient(130deg,var(--choc),var(--choc-warm));border-radius:16px;padding:14px 16px;color:#fff;display:flex;align-items:center;gap:11px;box-shadow:0 4px 16px rgba(107,48,0,.25);}
 .alert.h{display:none;}
-.aico{width:32px;height:32px;flex-shrink:0;background:rgba(255,255,255,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.aico{width:32px;height:32px;flex-shrink:0;background:rgba(255,255,255,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;}
 .atit{font-weight:700;font-size:14px;}
-.asub{font-size:11px;opacity:0.78;margin-top:1px;}
+.asub{font-size:11px;opacity:.78;margin-top:1px;}
 
-/* CTA */
-.cta{
-  width:100%;padding:16px;
-  background:linear-gradient(130deg,var(--choc) 0%,var(--choc-warm) 100%);
-  color:white;border:none;border-radius:16px;
-  font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  box-shadow:0 5px 18px rgba(107,48,0,0.26);position:relative;overflow:hidden;
-  transition:transform 0.12s,box-shadow 0.12s;
-}
-.cta:active{transform:scale(0.97);box-shadow:0 2px 8px rgba(107,48,0,0.18);}
-.cta::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);transform:translateX(-100%);animation:sheen 3s infinite;}
+.cta{width:100%;padding:16px;background:linear-gradient(130deg,var(--choc),var(--choc-warm));color:#fff;border:none;border-radius:16px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 5px 18px rgba(107,48,0,.26);position:relative;overflow:hidden;transition:transform .12s;}
+.cta:active{transform:scale(.97);}
+.cta::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);transform:translateX(-100%);animation:sheen 3s infinite;}
 @keyframes sheen{60%,100%{transform:translateX(200%)}0%{transform:translateX(-100%)}}
 
-/* PRED GRID */
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .pc{background:var(--teal-mist);border-radius:12px;padding:12px;}
 .pc.w{background:#fdf0e6;}
 .pv{font-family:'Playfair Display',serif;font-size:24px;color:var(--teal-deep);line-height:1;}
 .pc.w .pv{color:var(--choc);}
-.pl{font-size:10px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--text-soft);margin-top:3px;}
+.pl{font-size:10px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--text-soft);margin-top:3px;}
 
-/* TIMELINE */
 .tl{position:relative;padding-left:2px;}
 .tl::before{content:'';position:absolute;left:12px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--teal-pale),var(--teal-mist));border-radius:99px;}
 .tli{display:flex;gap:14px;padding-bottom:18px;position:relative;}
 .tli:last-child{padding-bottom:0;}
-.tld{width:10px;height:10px;border-radius:50%;background:var(--teal);border:2px solid white;box-shadow:0 0 0 2px var(--teal-pale);flex-shrink:0;margin-top:4px;position:relative;z-index:1;margin-left:8px;}
+.tld{width:10px;height:10px;border-radius:50%;background:var(--teal);border:2px solid #fff;box-shadow:0 0 0 2px var(--teal-pale);flex-shrink:0;margin-top:4px;z-index:1;margin-left:8px;}
 .tld.o{background:var(--choc-warm);box-shadow:0 0 0 2px #f0d8c0;}
 .tlb{flex:1;min-width:0;}
 .tlh{display:flex;align-items:baseline;justify-content:space-between;gap:4px;}
-.tldate{font-size:13px;font-weight:600;color:var(--text-dark);}
+.tldate{font-size:13px;font-weight:600;}
 .tldur{font-size:12px;font-weight:700;color:var(--teal-deep);white-space:nowrap;}
-.tlsh{font-size:12px;color:var(--text-soft);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tlsh{font-size:12px;color:var(--text-soft);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .tlnote{font-size:11px;color:var(--text-mid);margin-top:4px;font-style:italic;}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
 .tag{padding:3px 8px;border-radius:99px;font-size:10px;font-weight:600;}
 .tag.t{background:var(--teal-mist);color:var(--teal-deep);}
 .tag.w{background:#fdf0e6;color:var(--choc-mid);}
 .tag.g{background:#f0f0f0;color:#555;}
-.tl-actions{display:flex;gap:6px;margin-top:8px;}
-.tl-btn{padding:4px 10px;border-radius:7px;border:1px solid var(--teal-pale);background:var(--teal-mist);font-size:11px;font-weight:600;color:var(--teal-deep);cursor:pointer;}
-.tl-btn.del{border-color:#fdd;background:#fff5f5;color:#c0392b;}
+.tlact{display:flex;gap:6px;margin-top:8px;}
+.tlbtn{padding:4px 10px;border-radius:7px;border:1px solid var(--teal-pale);background:var(--teal-mist);font-size:11px;font-weight:600;color:var(--teal-deep);cursor:pointer;}
+.tlbtn.del{border-color:#fdd;background:#fff5f5;color:#c0392b;}
 
-/* FILTER ROW */
-.filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
-.fp{padding:7px 13px;border-radius:99px;border:1.5px solid var(--teal-pale);background:white;font-size:12px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all 0.13s;}
-.fp.on{background:var(--teal-deep);border-color:var(--teal-deep);color:white;}
+.frow{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.fp{padding:7px 13px;border-radius:99px;border:1.5px solid var(--teal-pale);background:#fff;font-size:12px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all .13s;}
+.fp.on{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff;}
 
-/* CHART */
 .chart-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .chart-wrap::-webkit-scrollbar{display:none;}
 canvas{display:block;}
 
-/* RANK */
 .ri{padding:11px 0;border-bottom:1px solid var(--teal-mist);display:flex;align-items:center;gap:11px;}
 .ri:last-child{border-bottom:none;}
 .rn{font-family:'Playfair Display',serif;font-size:20px;color:var(--teal-pale);width:20px;text-align:center;flex-shrink:0;}
@@ -190,480 +140,284 @@ canvas{display:block;}
 .rbf{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--teal-deep),var(--teal-light));}
 .ravg{font-size:12px;font-weight:700;color:var(--choc-mid);white-space:nowrap;}
 
-/* CORRELATIONS */
-.corr-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.corr-cell{background:var(--teal-mist);border-radius:12px;padding:12px;}
-.corr-cell.warm{background:#fdf0e6;}
-.corr-v{font-family:'Playfair Display',serif;font-size:20px;color:var(--teal-deep);line-height:1;}
-.corr-cell.warm .corr-v{color:var(--choc);}
-.corr-l{font-size:10px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-soft);margin-top:3px;}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.cc{background:var(--teal-mist);border-radius:12px;padding:12px;}
+.cc.w{background:#fdf0e6;}
+.ccv{font-family:'Playfair Display',serif;font-size:20px;color:var(--teal-deep);line-height:1;}
+.cc.w .ccv{color:var(--choc);}
+.ccl{font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--text-soft);margin-top:3px;}
 
-/* SUM GRID */
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .sc{background:var(--teal-mist);border-radius:12px;padding:12px;}
 .sc.w{background:#fdf0e6;}
 .sv{font-family:'Playfair Display',serif;font-size:24px;color:var(--teal-deep);line-height:1;}
 .sc.w .sv{color:var(--choc);}
-.sl{font-size:10px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--text-soft);margin-top:3px;}
+.sl{font-size:10px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--text-soft);margin-top:3px;}
 
-/* SETTINGS */
 .srow{padding:14px 0;border-bottom:1px solid var(--teal-mist);display:flex;align-items:center;gap:12px;}
 .srow:last-child{border-bottom:none;}
-.srow-ico{width:36px;height:36px;border-radius:10px;background:var(--teal-mist);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.srow-ico svg{stroke:var(--teal-deep);}
-.srow-info{flex:1;}
-.srow-title{font-size:14px;font-weight:600;}
-.srow-sub{font-size:11px;color:var(--text-soft);margin-top:1px;}
-.srow-btn{padding:8px 14px;border-radius:9px;border:1.5px solid var(--teal-pale);background:var(--teal-mist);font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--teal-deep);cursor:pointer;white-space:nowrap;}
-.srow-btn:active{background:var(--teal-pale);}
-.srow-btn.danger{border-color:#fcc;background:#fff5f5;color:#c0392b;}
-.notif-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.notif-input{width:70px;padding:8px 10px;border:1.5px solid var(--teal-pale);border-radius:9px;font-family:'Outfit',sans-serif;font-size:14px;text-align:center;background:var(--teal-mist);color:var(--text-dark);outline:none;}
+.sric{width:36px;height:36px;border-radius:10px;background:var(--teal-mist);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sric svg{stroke:var(--teal-deep);}
+.srinfo{flex:1;min-width:0;}
+.srt{font-size:14px;font-weight:600;}
+.srs{font-size:11px;color:var(--text-soft);margin-top:1px;}
+.srbtn{padding:8px 14px;border-radius:9px;border:1.5px solid var(--teal-pale);background:var(--teal-mist);font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--teal-deep);cursor:pointer;white-space:nowrap;}
+.srbtn:active{background:var(--teal-pale);}
+.srbtn.danger{border-color:#fcc;background:#fff5f5;color:#c0392b;}
+.notifr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.notifin{width:64px;padding:8px 10px;border:1.5px solid var(--teal-pale);border-radius:9px;font-family:'Outfit',sans-serif;font-size:14px;text-align:center;background:var(--teal-mist);color:var(--text-dark);outline:none;}
 
-/* EMPTY */
 .empty{text-align:center;padding:24px 10px;color:var(--text-soft);font-size:13px;}
 .empty svg{stroke:var(--teal-pale);display:block;margin:0 auto 10px;}
 
-/* OVERLAY / SHEET */
-.overlay{position:fixed;inset:0;z-index:200;background:rgba(16,50,50,0.55);backdrop-filter:blur(7px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.26s;}
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(16,50,50,.55);backdrop-filter:blur(7px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .26s;}
 .overlay.on{opacity:1;pointer-events:all;}
-.sheet{width:100%;background:white;border-radius:22px 22px 0 0;padding:0 0 calc(20px + var(--sb));max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform 0.32s cubic-bezier(.4,0,.2,1);}
+.sheet{width:100%;background:#fff;border-radius:22px 22px 0 0;padding:0 0 calc(20px + var(--sb));max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);}
 .sheet::-webkit-scrollbar{display:none;}
 .overlay.on .sheet{transform:translateY(0);}
 .shandle{width:36px;height:4px;border-radius:99px;background:var(--teal-pale);margin:13px auto 0;}
-.stitle{font-family:'Playfair Display',serif;font-size:21px;padding:14px 20px 0;color:var(--text-dark);}
+.stitle{font-family:'Playfair Display',serif;font-size:21px;padding:14px 20px 0;}
 .ssec{padding:13px 20px 0;}
 .slbl{font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-soft);margin-bottom:7px;}
 .sdiv{height:1px;background:var(--teal-mist);margin:13px 20px 0;}
-.tinput{width:100%;padding:11px 13px;border:1.5px solid var(--teal-pale);border-radius:11px;outline:none;font-family:'Outfit',sans-serif;font-size:15px;color:var(--text-dark);background:var(--teal-mist);transition:border-color 0.16s;}
+.tinput{width:100%;padding:11px 13px;border:1.5px solid var(--teal-pale);border-radius:11px;outline:none;font-family:'Outfit',sans-serif;font-size:16px;color:var(--text-dark);background:var(--teal-mist);transition:border-color .16s;}
 .tinput:focus{border-color:var(--teal);}
 .irow{display:flex;gap:7px;}
 .iadd{padding:11px 14px;border-radius:11px;border:1.5px solid var(--teal-pale);background:var(--teal-mist);color:var(--teal-deep);font-size:19px;font-weight:700;cursor:pointer;line-height:1;}
-.iadd:active{background:var(--teal-pale);}
 .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.pill{padding:7px 13px;border-radius:99px;border:1.5px solid var(--teal-pale);background:white;font-size:12px;font-weight:500;color:var(--text-mid);cursor:pointer;transition:all 0.13s;}
-.pill.on{background:var(--teal-deep);border-color:var(--teal-deep);color:white;}
+.pill{padding:7px 13px;border-radius:99px;border:1.5px solid var(--teal-pale);background:#fff;font-size:12px;font-weight:500;color:var(--text-mid);cursor:pointer;transition:all .13s;}
+.pill.on{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff;}
 .orow{display:flex;gap:6px;flex-wrap:wrap;}
-.ob{padding:9px 12px;border-radius:10px;border:1.5px solid var(--teal-pale);background:var(--teal-mist);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--text-mid);cursor:pointer;flex:1;text-align:center;min-width:56px;transition:all 0.13s;}
-.ob.on{background:var(--teal-deep);border-color:var(--teal-deep);color:white;}
-.dryer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.dopt{padding:9px 4px;border-radius:11px;border:1.5px solid var(--teal-pale);background:var(--teal-mist);text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.13s;}
+.ob{padding:9px 12px;border-radius:10px;border:1.5px solid var(--teal-pale);background:var(--teal-mist);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--text-mid);cursor:pointer;flex:1;text-align:center;min-width:56px;transition:all .13s;}
+.ob.on{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff;}
+.dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.dopt{padding:9px 4px;border-radius:11px;border:1.5px solid var(--teal-pale);background:var(--teal-mist);text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all .13s;}
 .dopt.on{background:var(--teal-deep);border-color:var(--teal-deep);}
-.dopt.on svg{stroke:white!important;}
-.dopt.on .dlbl{color:white;}
+.dopt.on svg{stroke:#fff!important;}
+.dopt.on .dlbl{color:#fff;}
 .dopt svg{width:19px;height:19px;}
 .dlbl{font-size:10px;font-weight:600;color:var(--text-mid);}
-textarea.tinput{resize:none;min-height:72px;}
-.btnconfirm{display:block;width:calc(100% - 40px);margin:14px 20px 0;padding:16px;border:none;border-radius:14px;background:linear-gradient(130deg,var(--teal-deep),var(--teal));color:white;font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:transform 0.12s;}
-.btnconfirm:active{transform:scale(0.98);}
-.warn-badge{display:inline-block;background:#fff3cd;color:#856404;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle;}
+textarea.tinput{resize:none;min-height:70px;}
+.btnc{display:block;width:calc(100% - 40px);margin:14px 20px 0;padding:16px;border:none;border-radius:14px;background:linear-gradient(130deg,var(--teal-deep),var(--teal));color:#fff;font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:transform .12s;}
+.btnc:active{transform:scale(.98);}
+.badge{display:inline-block;background:#fff3cd;color:#856404;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:5px;vertical-align:middle;}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + var(--sb) + 16px);transform:translateX(-50%) translateY(20px);background:var(--text-dark);color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:500;z-index:300;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:84%;text-align:center;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
+<!-- SPLASH (dynamic, animated stroke) -->
 <div id="splash">
-  <div class="splash-follicle">
-    <svg viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- sebaceous gland -->
-      <ellipse cx="54" cy="52" rx="14" ry="9" fill="rgba(255,255,255,0.35)"/>
-      <line x1="40" y1="56" x2="54" y2="56" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
-      <!-- hair strand -->
-      <path d="M40 8 C43 28 37 48 40 72" stroke="white" stroke-width="6" stroke-linecap="round"/>
-      <!-- bulb -->
-      <ellipse cx="40" cy="88" rx="22" ry="18" fill="white" fill-opacity="0.9"/>
-      <!-- inner papilla -->
-      <ellipse cx="40" cy="88" rx="10" ry="8" fill="rgba(61,207,207,0.5)"/>
-      <!-- root sheath hint -->
-      <ellipse cx="40" cy="88" rx="22" ry="18" stroke="rgba(255,255,255,0.4)" stroke-width="5" fill="none"/>
+  <div class="sp-drop">
+    <svg viewBox="0 0 100 110" fill="none">
+      <path class="sp-path" d="M50 8 C50 30 80 50 80 72 a30 30 0 1 1 -60 0 C20 50 50 30 50 8 Z" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="sp-wave" d="M34 74 q8 -7 16 0 t16 0" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
     </svg>
   </div>
-  <div class="splash-logo">Scalp</div>
-  <div class="splash-sub">Cuero cabelludo</div>
+  <div class="sp-dots"><i></i><i></i><i></i></div>
 </div>
 
-<!-- MODAL: Registrar / Editar lavado -->
+<!-- MODAL -->
 <div class="overlay" id="ov">
   <div class="sheet" id="sh">
     <div class="shandle"></div>
     <div class="stitle" id="shTitle">Registrar lavado</div>
-
     <div class="ssec">
       <div class="slbl">Champu usado</div>
-      <div class="irow">
-        <input class="tinput" id="shampooIn" placeholder="Escribe o selecciona...">
-        <button class="iadd" onclick="addShampoo()">+</button>
-      </div>
+      <div class="irow"><input class="tinput" id="shampooIn" placeholder="Escribe o selecciona..."><button class="iadd" onclick="addShampoo()">+</button></div>
       <div class="pills" id="shPills"></div>
     </div>
-
     <div class="sdiv"></div>
-    <div class="ssec">
-      <div class="slbl">Cuero cabelludo antes</div>
-      <div class="orow" id="scalpRow">
-        <button class="ob" onclick="sel('scalp',1,this)">Muy graso</button>
-        <button class="ob" onclick="sel('scalp',2,this)">Graso</button>
-        <button class="ob" onclick="sel('scalp',3,this)">Normal</button>
-        <button class="ob" onclick="sel('scalp',4,this)">Limpio</button>
-      </div>
-    </div>
-
+    <div class="ssec"><div class="slbl">Cuero cabelludo antes</div><div class="orow" id="r_scalp">
+      <button class="ob" data-v="1">Muy graso</button><button class="ob" data-v="2">Graso</button><button class="ob" data-v="3">Normal</button><button class="ob" data-v="4">Limpio</button></div></div>
     <div class="sdiv"></div>
-    <div class="ssec">
-      <div class="slbl">Costras antes</div>
-      <div class="orow" id="costraRow">
-        <button class="ob" onclick="sel('costra',0,this)">Ninguna</button>
-        <button class="ob" onclick="sel('costra',1,this)">Pocas</button>
-        <button class="ob" onclick="sel('costra',2,this)">Muchas</button>
-      </div>
-    </div>
-
+    <div class="ssec"><div class="slbl">Costras antes</div><div class="orow" id="r_costra">
+      <button class="ob" data-v="0">Ninguna</button><button class="ob" data-v="1">Pocas</button><button class="ob" data-v="2">Muchas</button></div></div>
     <div class="sdiv"></div>
-    <div class="ssec">
-      <div class="slbl">Costras despues del lavado</div>
-      <div class="orow" id="costraAfterRow">
-        <button class="ob" onclick="sel('costraAfter',0,this)">Mejoro</button>
-        <button class="ob" onclick="sel('costraAfter',1,this)">Igual</button>
-        <button class="ob" onclick="sel('costraAfter',2,this)">Peor</button>
-      </div>
-    </div>
-
+    <div class="ssec"><div class="slbl">Costras despues del lavado</div><div class="orow" id="r_costraAfter">
+      <button class="ob" data-v="0">Mejoro</button><button class="ob" data-v="1">Igual</button><button class="ob" data-v="2">Peor</button></div></div>
     <div class="sdiv"></div>
-    <div class="ssec">
-      <div class="slbl">Secado</div>
-      <div class="dryer-grid" id="dryerRow">
-        <div class="dopt" onclick="selDryer(0,this)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="2" stroke-linecap="round"><path d="M17 8l4 4-4 4"/><path d="M3 12h18"/></svg>
-          <div class="dlbl">Aire frio</div>
-        </div>
-        <div class="dopt" onclick="selDryer(1,this)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-          <div class="dlbl">Tibio</div>
-        </div>
-        <div class="dopt" onclick="selDryer(2,this)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--choc-warm)" stroke-width="2" stroke-linecap="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>
-          <div class="dlbl">Caliente</div>
-        </div>
-        <div class="dopt" onclick="selDryer(3,this)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-soft)" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          <div class="dlbl">Sin secar</div>
-        </div>
-      </div>
-    </div>
-
+    <div class="ssec"><div class="slbl">Secado</div><div class="dgrid" id="r_dryer">
+      <div class="dopt" data-v="0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="2" stroke-linecap="round"><path d="M17 8l4 4-4 4"/><path d="M3 12h18"/></svg><div class="dlbl">Aire frio</div></div>
+      <div class="dopt" data-v="1"><svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg><div class="dlbl">Tibio</div></div>
+      <div class="dopt" data-v="2"><svg viewBox="0 0 24 24" fill="none" stroke="var(--choc-warm)" stroke-width="2" stroke-linecap="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 002.5 2.5z"/></svg><div class="dlbl">Caliente</div></div>
+      <div class="dopt" data-v="3"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-soft)" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><div class="dlbl">Sin secar</div></div>
+    </div></div>
     <div class="sdiv"></div>
-    <div class="ssec" id="nextDaySec">
-      <div class="slbl">Como quedo al dia siguiente <span class="warn-badge">OPCIONAL</span></div>
-      <div class="orow" id="nextDayRow">
-        <button class="ob" onclick="sel('nextDay',0,this)">Bien</button>
-        <button class="ob" onclick="sel('nextDay',1,this)">Regular</button>
-        <button class="ob" onclick="sel('nextDay',2,this)">Graso</button>
-        <button class="ob" onclick="sel('nextDay',3,this)">Muy graso</button>
-      </div>
-    </div>
-
+    <div class="ssec" id="ndSec"><div class="slbl">Como quedo al dia siguiente <span class="badge">OPCIONAL</span></div><div class="orow" id="r_nextDay">
+      <button class="ob" data-v="0">Bien</button><button class="ob" data-v="1">Regular</button><button class="ob" data-v="2">Graso</button><button class="ob" data-v="3">Muy graso</button></div></div>
     <div class="sdiv"></div>
-    <div class="ssec">
-      <div class="slbl">Notas libres <span class="warn-badge">OPCIONAL</span></div>
-      <textarea class="tinput" id="notesIn" placeholder="Aplique aceite antes, agua fria, cuero irritado..."></textarea>
-    </div>
-
-    <button class="btnconfirm" id="shConfirm" onclick="saveWash()">Guardar</button>
+    <div class="ssec"><div class="slbl">Notas <span class="badge">OPCIONAL</span></div><textarea class="tinput" id="notesIn" placeholder="Aplique aceite antes, agua fria..."></textarea></div>
+    <button class="btnc" id="shConfirm" onclick="saveWash()">Guardar</button>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <!-- SHELL -->
 <div class="shell">
-  <!-- HEADER -->
   <div class="hdr">
     <div class="hdr-row">
-      <div class="hdr-left">
-        <svg class="hdr-follicle" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="20" cy="15" rx="6" ry="4" fill="rgba(255,255,255,0.3)"/>
-          <line x1="14" y1="17" x2="20" y2="17" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-          <path d="M14 2 C16 9 12 16 14 24" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
-          <ellipse cx="14" cy="30" rx="9" ry="7" fill="white" fill-opacity="0.85"/>
-          <ellipse cx="14" cy="30" rx="4" ry="3.5" fill="rgba(61,207,207,0.5)"/>
-        </svg>
-        <div class="hdr-logo">Scalp</div>
-      </div>
-      <button class="hdr-add" onclick="openModal()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-      </button>
+      <svg class="hdr-logo" viewBox="0 0 100 110" fill="none">
+        <path d="M50 8 C50 30 80 50 80 72 a30 30 0 1 1 -60 0 C20 50 50 30 50 8 Z" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M34 74 q8 -7 16 0 t16 0" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"/>
+      </svg>
+      <button class="hdr-add" onclick="openModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
     </div>
-    <div class="status-glass">
+    <div class="glass">
       <div class="s-lbl">Estado actual</div>
       <div class="s-val" id="sVal">--</div>
       <div class="s-det" id="sDet">Sin registros todavia</div>
-      <div class="prog-track"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
+      <div class="ptrack"><div class="pfill" id="pFill" style="width:0%"></div></div>
     </div>
   </div>
 
-  <!-- SCROLL -->
   <div class="scroll" id="scrl">
-
-    <!-- INICIO -->
+    <!-- HOME -->
     <div class="tab on" id="tab-home">
-      <div class="alert h" id="alertEl">
-        <div class="aico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-        <div><div class="atit" id="alertTit"></div><div class="asub" id="alertSub"></div></div>
-      </div>
-
-      <div class="alert h" id="dupAlert" style="background:linear-gradient(130deg,var(--teal-deep),var(--teal));">
-        <div class="aico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-        <div><div class="atit">Ya registraste un lavado hoy</div><div class="asub">Puedes editarlo en el historial</div></div>
-      </div>
-
-      <button class="cta" onclick="openModal()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        Registrar lavado
-      </button>
-
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><div class="clbl">Prediccion inteligente</div></div>
-        <div class="cbd">
-          <div class="pgrid">
-            <div class="pc"><div class="pv" id="pDays">--</div><div class="pl">Dias limpio</div></div>
-            <div class="pc w"><div class="pv" id="pNext">--</div><div class="pl">Proximo lavado</div></div>
-            <div class="pc"><div class="pv" id="pAvg">--</div><div class="pl">Tu media</div></div>
-            <div class="pc w"><div class="pv" id="pBest">--</div><div class="pl">Mejor champu</div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div><div class="clbl">Ultimo lavado</div></div>
-        <div class="cbd" id="lastCard"><div class="empty"><p>Pulsa + para empezar</p></div></div>
-      </div>
+      <div class="alert h" id="alertEl"><div class="aico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div><div class="atit" id="alertTit"></div><div class="asub" id="alertSub"></div></div></div>
+      <div class="alert h" id="dupAlert" style="background:linear-gradient(130deg,var(--teal-deep),var(--teal))"><div class="aico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div><div class="atit">Ya registraste un lavado hoy</div><div class="asub">Puedes editarlo en el historial</div></div></div>
+      <button class="cta" onclick="openModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Registrar lavado</button>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><div class="clbl">Prediccion inteligente</div></div>
+        <div class="cbd"><div class="pgrid">
+          <div class="pc"><div class="pv" id="pDays">--</div><div class="pl">Dias limpio</div></div>
+          <div class="pc w"><div class="pv" id="pNext">--</div><div class="pl">Proximo lavado</div></div>
+          <div class="pc"><div class="pv" id="pAvg">--</div><div class="pl">Tu media</div></div>
+          <div class="pc w"><div class="pv" id="pBest">--</div><div class="pl">Mejor champu</div></div>
+        </div></div></div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div><div class="clbl">Ultimo lavado</div></div><div class="cbd" id="lastCard"><div class="empty"><p>Pulsa + para empezar</p></div></div></div>
     </div>
 
-    <!-- HISTORIAL -->
+    <!-- HISTORY -->
     <div class="tab" id="tab-history">
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div><div class="clbl">Historial</div></div>
-        <div class="cbd">
-          <div class="filter-row" id="filterRow"></div>
-          <div class="tl" id="tlEl"><div class="empty"><p>Sin registros todavia</p></div></div>
-        </div>
-      </div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div><div class="clbl">Historial</div></div>
+        <div class="cbd"><div class="frow" id="frow"></div><div class="tl" id="tlEl"><div class="empty"><p>Sin registros todavia</p></div></div></div></div>
     </div>
 
     <!-- STATS -->
     <div class="tab" id="tab-stats">
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="22,2 13.5,15.5 8.5,10.5 1,18"/></svg></div><div class="clbl">Evolucion de duracion</div></div>
-        <div class="cbd">
-          <div class="chart-wrap"><canvas id="evoChart" height="140"></canvas></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="clbl">Ranking de champus</div></div>
-        <div class="cbd" id="rankEl"><div class="empty"><p>Registra varios lavados</p></div></div>
-      </div>
-
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div><div class="clbl">Comparativa secador</div></div>
-        <div class="cbd" id="dryerCorrEl"><div class="empty"><p>Necesitas mas registros</p></div></div>
-      </div>
-
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="clbl">Resumen</div></div>
-        <div class="cbd">
-          <div class="sgrid">
-            <div class="sc"><div class="sv" id="sTot">0</div><div class="sl">Lavados</div></div>
-            <div class="sc w"><div class="sv" id="sSh">0</div><div class="sl">Champus</div></div>
-            <div class="sc"><div class="sv" id="sMax">--</div><div class="sl">Mayor duracion</div></div>
-            <div class="sc w"><div class="sv" id="sTrend">--</div><div class="sl">Tendencia</div></div>
-          </div>
-        </div>
-      </div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="22,2 13.5,15.5 8.5,10.5 1,18"/></svg></div><div class="clbl">Evolucion de duracion</div></div><div class="cbd"><div class="chart-wrap"><canvas id="evo" height="150"></canvas></div></div></div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="clbl">Ranking de champus</div></div><div class="cbd" id="rankEl"><div class="empty"><p>Registra varios lavados</p></div></div></div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 00-1-1.7l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.7l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div><div class="clbl">Comparativa secador</div></div><div class="cbd" id="dryerEl"><div class="empty"><p>Necesitas mas registros</p></div></div></div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="clbl">Resumen</div></div>
+        <div class="cbd"><div class="sgrid">
+          <div class="sc"><div class="sv" id="sTot">0</div><div class="sl">Lavados</div></div>
+          <div class="sc w"><div class="sv" id="sSh">0</div><div class="sl">Champus</div></div>
+          <div class="sc"><div class="sv" id="sMax">--</div><div class="sl">Mayor duracion</div></div>
+          <div class="sc w"><div class="sv" id="sTrend">--</div><div class="sl">Tendencia</div></div>
+        </div></div></div>
     </div>
 
-    <!-- AJUSTES -->
+    <!-- SETTINGS -->
     <div class="tab" id="tab-settings">
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div class="clbl">Notificaciones</div></div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div class="clbl">Notificaciones</div></div>
         <div class="cbd">
-          <div class="srow">
-            <div class="srow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
-            <div class="srow-info">
-              <div class="srow-title">Avisar antes del lavado</div>
-              <div class="srow-sub">Horas antes de tu media predicha</div>
-              <div class="notif-row" style="margin-top:8px;">
-                <input type="number" class="notif-input" id="notifHours" value="2" min="1" max="48"> horas antes
-                <button class="srow-btn" onclick="saveNotifPref()">Guardar</button>
-              </div>
-            </div>
-          </div>
-          <div class="srow">
-            <div class="srow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-            <div class="srow-info">
-              <div class="srow-title">Recordatorio de backup</div>
-              <div class="srow-sub">Aviso semanal para exportar datos</div>
-            </div>
-            <button class="srow-btn" onclick="requestNotif()">Activar</button>
-          </div>
-        </div>
-      </div>
+          <div class="srow"><div class="sric"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
+            <div class="srinfo"><div class="srt">Avisar antes del lavado</div><div class="srs">Horas antes de tu media predicha</div>
+              <div class="notifr"><input type="number" class="notifin" id="notifH" value="2" min="1" max="48"> horas antes <button class="srbtn" onclick="enableNotif()">Activar</button></div>
+              <div class="srs" id="notifState" style="margin-top:6px;"></div>
+            </div></div>
+        </div></div>
 
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="clbl">Exportar e importar datos</div></div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="clbl">Datos · backup</div></div>
         <div class="cbd">
-          <div class="srow">
-            <div class="srow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-            <div class="srow-info"><div class="srow-title">Exportar JSON</div><div class="srow-sub">Todos tus datos en formato JSON</div></div>
-            <button class="srow-btn" onclick="exportJSON()">Exportar</button>
-          </div>
-          <div class="srow">
-            <div class="srow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-            <div class="srow-info"><div class="srow-title">Exportar CSV</div><div class="srow-sub">Para abrir en Excel o Numbers</div></div>
-            <button class="srow-btn" onclick="exportCSV()">Exportar</button>
-          </div>
-          <div class="srow">
-            <div class="srow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <div class="srow-info"><div class="srow-title">Importar JSON</div><div class="srow-sub">Restaurar desde un backup</div></div>
-            <button class="srow-btn" onclick="document.getElementById('importFile').click()">Importar</button>
-            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-          </div>
-          <div class="srow">
-            <div class="srow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-5.36L1 10"/></svg></div>
-            <div class="srow-info"><div class="srow-title">Ultimo backup</div><div class="srow-sub" id="lastBackupSub">Nunca exportado</div></div>
-          </div>
-          <div class="srow">
-            <div class="srow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 15v4a2 2 0 002 2h14a2 2 0 002-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <div class="srow-info"><div class="srow-title">iCloud / Compartir</div><div class="srow-sub">Exporta JSON y guárdalo en iCloud Drive manualmente desde el panel de compartir</div></div>
-            <button class="srow-btn" onclick="shareData()">Compartir</button>
-          </div>
-        </div>
-      </div>
+          <div class="srow"><div class="sric"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/></svg></div><div class="srinfo"><div class="srt">Guardar en Archivos / iCloud</div><div class="srs">Abre el panel de compartir de iOS</div></div><button class="srbtn" onclick="shareData()">Guardar</button></div>
+          <div class="srow"><div class="sric"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="srinfo"><div class="srt">Descargar JSON</div><div class="srs">Backup completo restaurable</div></div><button class="srbtn" onclick="exportJSON()">JSON</button></div>
+          <div class="srow"><div class="sric"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div><div class="srinfo"><div class="srt">Descargar CSV</div><div class="srs">Para Excel o Numbers</div></div><button class="srbtn" onclick="exportCSV()">CSV</button></div>
+          <div class="srow"><div class="sric"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div class="srinfo"><div class="srt">Importar JSON</div><div class="srs">Restaurar desde backup</div></div><button class="srbtn" onclick="document.getElementById('impFile').click()">Importar</button><input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importJSON(event)"></div>
+          <div class="srow"><div class="sric"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="1,4 1,10 7,10"/><path d="M3.5 15a9 9 0 102.1-5.4L1 10"/></svg></div><div class="srinfo"><div class="srt">Ultimo backup</div><div class="srs" id="lastBk">Nunca</div></div></div>
+        </div></div>
 
-      <div class="card">
-        <div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div><div class="clbl">Zona de peligro</div></div>
-        <div class="cbd">
-          <div class="srow">
-            <div class="srow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></div>
-            <div class="srow-info"><div class="srow-title">Borrar todos los datos</div><div class="srow-sub">Esta accion no se puede deshacer</div></div>
-            <button class="srow-btn danger" onclick="clearAll()">Borrar</button>
-          </div>
-        </div>
-      </div>
+      <div class="card"><div class="chd"><div class="cico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></div><div class="clbl">Zona de peligro</div></div>
+        <div class="cbd"><div class="srow"><div class="sric"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></div><div class="srinfo"><div class="srt">Borrar todos los datos</div><div class="srs">No se puede deshacer</div></div><button class="srbtn danger" onclick="clearAll()">Borrar</button></div></div></div>
     </div>
-
-  </div><!-- /scroll -->
+  </div>
 
   <nav class="nav">
-    <button class="nb on" id="nb-home" onclick="showTab('home')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
-      Inicio
-    </button>
-    <button class="nb" id="nb-history" onclick="showTab('history')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-      Historial
-    </button>
-    <button class="nb" id="nb-stats" onclick="showTab('stats')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      Stats
-    </button>
-    <button class="nb" id="nb-settings" onclick="showTab('settings')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      Ajustes
-    </button>
+    <button class="nb on" id="nb-home" onclick="showTab('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Inicio</button>
+    <button class="nb" id="nb-history" onclick="showTab('history')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>Historial</button>
+    <button class="nb" id="nb-stats" onclick="showTab('stats')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats</button>
+    <button class="nb" id="nb-settings" onclick="showTab('settings')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1A1.6 1.6 0 009 19.4a1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 110-4h.1A1.6 1.6 0 004.6 9a1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>Ajustes</button>
   </nav>
 </div>
 
 <script>
-// ── DATA ─────────────────────────────────────────
-const KEY='scalp_v4';
+// extra zoom guards (iOS Safari ignores user-scalable; block gestures + double-tap)
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('gesturechange',e=>e.preventDefault());
+document.addEventListener('gestureend',e=>e.preventDefault());
+let lastTouch=0;
+document.addEventListener('touchend',e=>{
+  const now=Date.now();
+  if(now-lastTouch<=300){e.preventDefault();}
+  lastTouch=now;
+},{passive:false});
+document.addEventListener('dblclick',e=>e.preventDefault());
+
+// ── DATA ──
+const KEY='scalp_v5';
 let D={washes:[],shampoos:[],notifHours:2,lastBackup:null};
 function load(){try{const r=localStorage.getItem(KEY);if(r)D=Object.assign({washes:[],shampoos:[],notifHours:2,lastBackup:null},JSON.parse(r));}catch(e){}}
-function save(){localStorage.setItem(KEY,JSON.stringify(D));}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){toast('No se pudo guardar (almacenamiento lleno)');}}
 
-// ── MODAL STATE ────────────────────────────────
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600);}
+
+// ── MODAL ──
 let ms={shampoo:null,scalp:null,costra:null,costraAfter:null,dryer:null,nextDay:null};
 let editIdx=null;
-
 function openModal(idx=null){
   editIdx=idx;
   const w=idx!=null?D.washes[idx]:null;
-  ms={shampoo:w?w.shampoo:null,scalp:w?w.scalp:null,costra:w?w.costra:null,
-      costraAfter:w?w.costraAfter:null,dryer:w?w.dryer:null,nextDay:w?w.nextDay:null};
+  ms={shampoo:w?w.shampoo:null,scalp:w?w.scalp:null,costra:w?w.costra:null,costraAfter:w?w.costraAfter:null,dryer:w?w.dryer:null,nextDay:w?w.nextDay:null};
   document.getElementById('shTitle').textContent=idx!=null?'Editar lavado':'Registrar lavado';
   document.getElementById('shConfirm').textContent=idx!=null?'Guardar cambios':'Guardar';
   document.getElementById('shampooIn').value=w?w.shampoo:'';
-  document.getElementById('notesIn').value=w?w.notes||'':'';
-  // reset buttons
+  document.getElementById('notesIn').value=w&&w.notes?w.notes:'';
   document.querySelectorAll('.ob,.dopt').forEach(b=>b.classList.remove('on'));
   renderPills();
-  // restore selections
-  if(w){
-    restoreOb('scalpRow',w.scalp,'scalp');
-    restoreOb('costraRow',w.costra,'costra');
-    restoreOb('costraAfterRow',w.costraAfter,'costraAfter');
-    restoreOb('nextDayRow',w.nextDay,'nextDay');
-    if(w.dryer!=null){document.querySelectorAll('.dopt')[w.dryer].classList.add('on');}
-  }
-  document.getElementById('nextDaySec').style.display=D.washes.length>0||idx!=null?'block':'none';
+  ['scalp','costra','costraAfter','nextDay'].forEach(t=>{if(ms[t]!=null){const b=document.querySelector(`#r_${t} [data-v="${ms[t]}"]`);if(b)b.classList.add('on');}});
+  if(ms.dryer!=null){const b=document.querySelector(`#r_dryer [data-v="${ms.dryer}"]`);if(b)b.classList.add('on');}
+  document.getElementById('ndSec').style.display=(D.washes.length>0||idx!=null)?'block':'none';
   document.getElementById('ov').classList.add('on');
   document.getElementById('sh').scrollTop=0;
 }
-
-function restoreOb(rowId,val,type){
-  if(val==null)return;
-  const btns=document.getElementById(rowId).querySelectorAll('.ob');
-  const vals={scalp:[1,2,3,4],costra:[0,1,2],costraAfter:[0,1,2],nextDay:[0,1,2,3]};
-  vals[type].forEach((v,i)=>{if(v===val)btns[i].classList.add('on');});
-}
-
 function closeModal(){document.getElementById('ov').classList.remove('on');}
-document.getElementById('ov').addEventListener('click',e=>{if(e.target===document.getElementById('ov'))closeModal();});
+document.getElementById('ov').addEventListener('click',e=>{if(e.target.id==='ov')closeModal();});
 
-function sel(type,val,btn){
-  ms[type]=val;
-  const map={scalp:'scalpRow',costra:'costraRow',costraAfter:'costraAfterRow',nextDay:'nextDayRow'};
-  document.getElementById(map[type]).querySelectorAll('.ob').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-}
-function selDryer(val,el){
-  ms.dryer=val;
-  document.querySelectorAll('.dopt').forEach(d=>d.classList.remove('on'));
-  el.classList.add('on');
-}
-function addShampoo(){
-  const v=document.getElementById('shampooIn').value.trim();if(!v)return;
-  if(!D.shampoos.includes(v)){D.shampoos.push(v);save();}
-  ms.shampoo=v;renderPills();
-}
-function selectPill(name){
-  ms.shampoo=name;
-  document.getElementById('shampooIn').value=name;
-  renderPills();
-}
-function renderPills(){
-  document.getElementById('shPills').innerHTML=D.shampoos.map(s=>
-    `<button class="pill ${s===ms.shampoo?'on':''}" onclick="selectPill('${s.replace(/'/g,"\\'")}')">${s}</button>`
-  ).join('');
-}
+document.querySelectorAll('.orow').forEach(row=>{
+  row.addEventListener('click',e=>{
+    const btn=e.target.closest('.ob');if(!btn)return;
+    const type=row.id.replace('r_','');
+    ms[type]=parseInt(btn.dataset.v);
+    row.querySelectorAll('.ob').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  });
+});
+document.getElementById('r_dryer').addEventListener('click',e=>{
+  const opt=e.target.closest('.dopt');if(!opt)return;
+  ms.dryer=parseInt(opt.dataset.v);
+  document.querySelectorAll('#r_dryer .dopt').forEach(d=>d.classList.remove('on'));
+  opt.classList.add('on');
+});
+
+function addShampoo(){const v=document.getElementById('shampooIn').value.trim();if(!v)return;if(!D.shampoos.includes(v)){D.shampoos.push(v);save();}ms.shampoo=v;renderPills();}
+function selectPill(n){ms.shampoo=n;document.getElementById('shampooIn').value=n;renderPills();}
+function renderPills(){document.getElementById('shPills').innerHTML=D.shampoos.map(s=>`<button class="pill ${s===ms.shampoo?'on':''}" onclick="selectPill('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');}
 
 function saveWash(){
   const txt=document.getElementById('shampooIn').value.trim();
   const shampoo=txt||ms.shampoo||'Sin champu';
-  if(txt&&!D.shampoos.includes(txt)){D.shampoos.push(txt);}
+  if(txt&&!D.shampoos.includes(txt))D.shampoos.push(txt);
   const entry={date:editIdx!=null?D.washes[editIdx].date:new Date().toISOString(),shampoo,scalp:ms.scalp,costra:ms.costra,costraAfter:ms.costraAfter,dryer:ms.dryer,nextDay:ms.nextDay,notes:document.getElementById('notesIn').value.trim()};
-  if(editIdx!=null){D.washes[editIdx]=entry;}else{D.washes.push(entry);}
+  if(editIdx!=null)D.washes[editIdx]=entry;else D.washes.push(entry);
   save();closeModal();renderAll();scheduleNotif();
+  toast(editIdx!=null?'Lavado actualizado':'Lavado registrado');
 }
+function deleteWash(i){if(!confirm('Eliminar este registro?'))return;D.washes.splice(i,1);save();renderAll();toast('Registro eliminado');}
 
-function deleteWash(idx){
-  if(!confirm('Eliminar este registro?'))return;
-  D.washes.splice(idx,1);save();renderAll();
-}
-
-// ── TABS ───────────────────────────────────────
-let activeTab='home';
-let filterShampoo=null;
+// ── TABS ──
+let activeTab='home',filterShampoo=null;
 function showTab(t){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
@@ -676,380 +430,183 @@ function showTab(t){
   if(t==='settings')renderSettings();
 }
 
-// ── PREDICTION ─────────────────────────────────
-function withDur(){
-  const w=[...D.washes].sort((a,b)=>new Date(a.date)-new Date(b.date));
-  for(let i=1;i<w.length;i++)w[i-1].dur=(new Date(w[i].date)-new Date(w[i-1].date))/86400000;
-  return w;
-}
-function predict(){
-  const w=withDur().filter(x=>x.dur!=null);if(!w.length)return null;
-  let tw=0,td=0;
-  w.forEach((e,i)=>{const wt=Math.pow(1.5,i);td+=e.dur*wt;tw+=wt;});
-  const base=td/tw;
-  const smap={};
-  w.forEach(e=>{if(!smap[e.shampoo])smap[e.shampoo]=[];smap[e.shampoo].push(e.dur);});
-  const last=D.washes.length?D.washes[D.washes.length-1].shampoo:null;
-  let adj=0;
-  if(last&&smap[last]&&smap[last].length>=2){const sa=smap[last].reduce((a,b)=>a+b,0)/smap[last].length;adj=(sa-base)*0.4;}
-  return{days:Math.max(0.4,base+adj),base,smap};
-}
-function bestShampoo(smap){
-  if(!smap)return'--';let best=null,bv=0;
-  Object.entries(smap).forEach(([n,d])=>{const a=d.reduce((x,y)=>x+y,0)/d.length;if(a>bv){bv=a;best=n;}});
-  return best||'--';
-}
-function fmt(days){
-  if(days==null)return'?';
-  if(days<1)return Math.round(days*24)+'h';
-  return days.toFixed(1)+'d';
-}
-function fmtDate(d){
-  const now=new Date(),dt=new Date(d),diff=Math.floor((now-dt)/86400000);
-  if(diff===0)return'Hoy';if(diff===1)return'Ayer';
-  return dt.toLocaleDateString('es-ES',{day:'numeric',month:'short'});
-}
-function todayWash(){
-  const today=new Date().toDateString();
-  return D.washes.some(w=>new Date(w.date).toDateString()===today);
-}
+// ── ENGINE ──
+function withDur(){const w=[...D.washes].sort((a,b)=>new Date(a.date)-new Date(b.date));for(let i=1;i<w.length;i++)w[i-1].dur=(new Date(w[i].date)-new Date(w[i-1].date))/86400000;return w;}
+function predict(){const w=withDur().filter(x=>x.dur!=null);if(!w.length)return null;let tw=0,td=0;w.forEach((e,i)=>{const wt=Math.pow(1.5,i);td+=e.dur*wt;tw+=wt;});const base=td/tw;const sm={};w.forEach(e=>{(sm[e.shampoo]=sm[e.shampoo]||[]).push(e.dur);});const last=D.washes.length?D.washes[D.washes.length-1].shampoo:null;let adj=0;if(last&&sm[last]&&sm[last].length>=2){const sa=sm[last].reduce((a,b)=>a+b,0)/sm[last].length;adj=(sa-base)*0.4;}return{days:Math.max(0.4,base+adj),base,sm};}
+function bestShampoo(sm){if(!sm)return'--';let b=null,bv=0;Object.entries(sm).forEach(([n,d])=>{const a=d.reduce((x,y)=>x+y,0)/d.length;if(a>bv){bv=a;b=n;}});return b||'--';}
+function fmt(d){if(d==null)return'?';return d<1?Math.round(d*24)+'h':d.toFixed(1)+'d';}
+function fmtDate(d){const n=new Date(),t=new Date(d),df=Math.floor((n-t)/86400000);if(df===0)return'Hoy';if(df===1)return'Ayer';return t.toLocaleDateString('es-ES',{day:'numeric',month:'short'});}
+function todayWash(){const t=new Date().toDateString();return D.washes.some(w=>new Date(w.date).toDateString()===t);}
+function status(){if(!D.washes.length)return null;const last=D.washes[D.washes.length-1];const p=predict();const el=(Date.now()-new Date(last.date))/86400000;const pd=p?p.days:1;return{el,pd,pct:Math.min(1,el/pd),last,p};}
 
-// ── RENDER ALL ─────────────────────────────────
-function renderAll(){
-  renderHeader();renderLastWash();
-  if(activeTab==='history')renderHistory();
-  if(activeTab==='stats')renderStats();
-  if(activeTab==='settings')renderSettings();
-}
+const scalpL=['','Muy graso','Graso','Normal','Limpio'],costraL=['Sin costras','Pocas costras','Muchas costras'],costraAL=['Mejoro','Igual','Peor'],dryerL=['Aire frio','Tibio','Caliente','Sin secar'],ndL=['Bien','Regular','Graso','Muy graso'];
 
-const scalpL=['','Muy graso','Graso','Normal','Limpio'];
-const costraL=['Sin costras','Pocas costras','Muchas costras'];
-const costraAL=['Mejoro','Igual','Peor'];
-const dryerL=['Aire frio','Tibio','Caliente','Sin secar'];
-const nextDayL=['Bien','Regular','Graso','Muy graso'];
+function renderAll(){renderHeader();renderLast();if(activeTab==='history')renderHistory();if(activeTab==='stats')renderStats();if(activeTab==='settings')renderSettings();}
 
 function renderHeader(){
-  const st=currentStatus();
-  if(!st){
-    document.getElementById('sVal').textContent='--';
-    document.getElementById('sDet').textContent='Sin registros todavia';
-    document.getElementById('pFill').style.width='0%';
-    document.getElementById('alertEl').classList.add('h');
-    document.getElementById('dupAlert').classList.add('h');
-    return;
-  }
-  const h=Math.round(st.elapsed*24),d=Math.floor(st.elapsed);
-  document.getElementById('sVal').textContent=h<24?'Recien lavado':`${d}d ${Math.round((st.elapsed%1)*24)}h`;
+  const st=status();
+  if(!st){document.getElementById('sVal').textContent='--';document.getElementById('sDet').textContent='Sin registros todavia';document.getElementById('pFill').style.width='0%';document.getElementById('alertEl').classList.add('h');document.getElementById('dupAlert').classList.add('h');return;}
+  const h=Math.round(st.el*24),d=Math.floor(st.el);
+  document.getElementById('sVal').textContent=h<24?'Recien lavado':`${d}d ${Math.round((st.el%1)*24)}h`;
   document.getElementById('sDet').textContent=h<24?`Hace ${h}h · ${st.last.shampoo}`:`Desde el lavado · ${st.last.shampoo}`;
   document.getElementById('pFill').style.width=(st.pct*100)+'%';
-  // dup alert
-  document.getElementById('dupAlert').classList.toggle('h',!todayWash()||h>1);
-  // wash alert
+  document.getElementById('dupAlert').classList.toggle('h',!(todayWash()&&h<=1));
   const ab=document.getElementById('alertEl');
-  if(st.pct>=0.88&&!todayWash()){
-    ab.classList.remove('h');
-    const rem=Math.max(0,st.pdDays-st.elapsed);
-    document.getElementById('alertTit').textContent=rem<0.05?'Toca lavarse el pelo':'Pronto deberas lavarte';
-    document.getElementById('alertSub').textContent=rem<0.05?`Han pasado ${fmt(st.elapsed)} · Tu media es ${fmt(st.pdDays)}`:`Quedan aprox ${fmt(rem)}`;
-  }else ab.classList.add('h');
-  // pred
-  if(st.pred){
-    const rem=Math.max(0,st.pred.days-st.elapsed);
-    document.getElementById('pDays').textContent=fmt(st.elapsed);
-    const nd=new Date(Date.now()+rem*86400000);
-    document.getElementById('pNext').textContent=rem<0.1?'Hoy':nd.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'});
-    document.getElementById('pAvg').textContent=fmt(st.pred.base);
-    document.getElementById('pBest').textContent=bestShampoo(st.pred.smap);
-  }
+  if(st.pct>=0.88&&!todayWash()){ab.classList.remove('h');const rem=Math.max(0,st.pd-st.el);document.getElementById('alertTit').textContent=rem<0.05?'Toca lavarse el pelo':'Pronto deberas lavarte';document.getElementById('alertSub').textContent=rem<0.05?`Han pasado ${fmt(st.el)} · media ${fmt(st.pd)}`:`Quedan aprox ${fmt(rem)}`;}else ab.classList.add('h');
+  if(st.p){const rem=Math.max(0,st.p.days-st.el);document.getElementById('pDays').textContent=fmt(st.el);const nd=new Date(Date.now()+rem*86400000);document.getElementById('pNext').textContent=rem<0.1?'Hoy':nd.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'});document.getElementById('pAvg').textContent=fmt(st.p.base);document.getElementById('pBest').textContent=bestShampoo(st.p.sm);}
 }
 
-function currentStatus(){
-  if(!D.washes.length)return null;
-  const last=D.washes[D.washes.length-1];
-  const pred=predict();
-  const elapsed=(Date.now()-new Date(last.date))/86400000;
-  const pdDays=pred?pred.days:1;
-  return{elapsed,pdDays,pct:Math.min(1,elapsed/pdDays),last,pred};
-}
-
-function renderLastWash(){
+function renderLast(){
   const el=document.getElementById('lastCard');
   if(!D.washes.length){el.innerHTML='<div class="empty"><p>Pulsa + para empezar</p></div>';return;}
-  const w=D.washes[D.washes.length-1];
-  const tags=[];
-  if(w.scalp!=null)tags.push({t:scalpL[w.scalp],c:'t'});
-  if(w.costra!=null)tags.push({t:costraL[w.costra],c:'w'});
-  if(w.costraAfter!=null)tags.push({t:'Despues: '+costraAL[w.costraAfter],c:'g'});
-  if(w.dryer!=null)tags.push({t:dryerL[w.dryer],c:'t'});
-  if(w.nextDay!=null)tags.push({t:'Sig dia: '+nextDayL[w.nextDay],c:'w'});
-  el.innerHTML=`<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px"><div style="font-size:15px;font-weight:600">${w.shampoo}</div><div style="font-size:11px;color:var(--text-soft)">${fmtDate(w.date)}</div></div><div class="tags">${tags.map(t=>`<span class="tag ${t.c}">${t.t}</span>`).join('')}</div>${w.notes?`<div style="font-size:12px;color:var(--text-mid);margin-top:6px;font-style:italic">${w.notes}</div>`:''}`;
+  const w=D.washes[D.washes.length-1];const tg=[];
+  if(w.scalp!=null)tg.push(['t',scalpL[w.scalp]]);
+  if(w.costra!=null)tg.push(['w',costraL[w.costra]]);
+  if(w.costraAfter!=null)tg.push(['g','Despues: '+costraAL[w.costraAfter]]);
+  if(w.dryer!=null)tg.push(['t',dryerL[w.dryer]]);
+  if(w.nextDay!=null)tg.push(['w','Sig dia: '+ndL[w.nextDay]]);
+  el.innerHTML=`<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px"><div style="font-size:15px;font-weight:600">${w.shampoo}</div><div style="font-size:11px;color:var(--text-soft)">${fmtDate(w.date)}</div></div><div class="tags">${tg.map(t=>`<span class="tag ${t[0]}">${t[1]}</span>`).join('')}</div>${w.notes?`<div style="font-size:12px;color:var(--text-mid);margin-top:6px;font-style:italic">${w.notes}</div>`:''}`;
 }
 
 function renderHistory(){
-  // filter pills
-  const allShampoos=[...new Set(D.washes.map(w=>w.shampoo))];
-  const fr=document.getElementById('filterRow');
-  fr.innerHTML=(allShampoos.length>1?[{n:'Todos',v:null},...allShampoos.map(s=>({n:s,v:s}))]:[]).map(f=>
-    `<button class="fp ${filterShampoo===f.v?'on':''}" onclick="setFilter(${f.v===null?'null':`'${f.v.replace(/'/g,"\\'")}'`})">${f.n}</button>`
-  ).join('');
-  const w=withDur();
-  const all=D.washes;
-  const filtered=filterShampoo?all.filter(x=>x.shampoo===filterShampoo):all;
-  const wdIdx=filtered.map(f=>all.indexOf(f));
+  const shs=[...new Set(D.washes.map(w=>w.shampoo))];
+  document.getElementById('frow').innerHTML=(shs.length>1?[{n:'Todos',v:null},...shs.map(s=>({n:s,v:s}))]:[]).map(f=>`<button class="fp ${filterShampoo===f.v?'on':''}" onclick="setFilter(${f.v===null?'null':`'${f.v.replace(/'/g,"\\'")}'`})">${f.n}</button>`).join('');
+  const wd=withDur();const durByDate={};wd.forEach(e=>durByDate[e.date]=e.dur);
+  const all=D.washes.map((w,i)=>({...w,idx:i}));
+  const filt=filterShampoo?all.filter(x=>x.shampoo===filterShampoo):all;
   const el=document.getElementById('tlEl');
-  if(!filtered.length){el.innerHTML='<div class="empty"><p>Sin registros</p></div>';return;}
-  const sorted=[...filtered].map((f,i)=>({...f,origIdx:all.indexOf(f)})).sort((a,b)=>new Date(b.date)-new Date(a.date));
-  // compute dur for display
-  const wSorted=withDur().reduce((m,e,i)=>(m[e.date]=e,m),{});
+  if(!filt.length){el.innerHTML='<div class="empty"><p>Sin registros</p></div>';return;}
+  const sorted=[...filt].sort((a,b)=>new Date(b.date)-new Date(a.date));
   el.innerHTML=sorted.map((e,i)=>{
-    const orig=wSorted[e.date]||e;
-    const tags=[];
-    if(e.scalp!=null)tags.push({t:scalpL[e.scalp],c:'t'});
-    if(e.costra!=null)tags.push({t:costraL[e.costra],c:'w'});
-    if(e.costraAfter!=null)tags.push({t:'Despues: '+costraAL[e.costraAfter],c:'g'});
-    if(e.dryer!=null)tags.push({t:dryerL[e.dryer],c:'t'});
-    if(e.nextDay!=null)tags.push({t:'Sig: '+nextDayL[e.nextDay],c:'w'});
-    return`<div class="tli">
-      <div class="tld ${i>0?'o':''}"></div>
-      <div class="tlb">
-        <div class="tlh">
-          <div class="tldate">${fmtDate(e.date)}</div>
-          ${orig.dur!=null?`<div class="tldur">${fmt(orig.dur)} limpio</div>`:`<div class="tldur" style="color:var(--teal-light)">actual</div>`}
-        </div>
-        <div class="tlsh">${e.shampoo}</div>
-        ${tags.length?`<div class="tags">${tags.map(t=>`<span class="tag ${t.c}">${t.t}</span>`).join('')}</div>`:''}
-        ${e.notes?`<div class="tlnote">${e.notes}</div>`:''}
-        <div class="tl-actions">
-          <button class="tl-btn" onclick="openModal(${e.origIdx})">Editar</button>
-          <button class="tl-btn del" onclick="deleteWash(${e.origIdx})">Eliminar</button>
-        </div>
-      </div>
-    </div>`;
+    const dur=durByDate[e.date];const tg=[];
+    if(e.scalp!=null)tg.push(['t',scalpL[e.scalp]]);
+    if(e.costra!=null)tg.push(['w',costraL[e.costra]]);
+    if(e.costraAfter!=null)tg.push(['g','Despues: '+costraAL[e.costraAfter]]);
+    if(e.dryer!=null)tg.push(['t',dryerL[e.dryer]]);
+    if(e.nextDay!=null)tg.push(['w','Sig: '+ndL[e.nextDay]]);
+    return`<div class="tli"><div class="tld ${i>0?'o':''}"></div><div class="tlb"><div class="tlh"><div class="tldate">${fmtDate(e.date)}</div>${dur!=null?`<div class="tldur">${fmt(dur)} limpio</div>`:`<div class="tldur" style="color:var(--teal-light)">actual</div>`}</div><div class="tlsh">${e.shampoo}</div>${tg.length?`<div class="tags">${tg.map(t=>`<span class="tag ${t[0]}">${t[1]}</span>`).join('')}</div>`:''}${e.notes?`<div class="tlnote">${e.notes}</div>`:''}<div class="tlact"><button class="tlbtn" onclick="openModal(${e.idx})">Editar</button><button class="tlbtn del" onclick="deleteWash(${e.idx})">Eliminar</button></div></div></div>`;
   }).join('');
 }
-
 function setFilter(v){filterShampoo=v;renderHistory();}
 
 function renderStats(){
-  const w=withDur();
-  const durs=w.filter(x=>x.dur!=null);
-
-  // Evolution chart
-  drawEvoChart(durs);
-
-  // Ranking
-  const pred=predict();const smap=pred?pred.smap:{};
-  const entries=Object.entries(smap).map(([n,d])=>({n,avg:d.reduce((a,b)=>a+b,0)/d.length,count:d.length})).sort((a,b)=>b.avg-a.avg);
-  const maxAvg=entries.length?entries[0].avg:1;
-  const re=document.getElementById('rankEl');
-  re.innerHTML=entries.length?entries.map((e,i)=>`
-    <div class="ri">
-      <div class="rn">${i+1}</div>
-      <div class="rinfo">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div class="rname">${e.n}</div><div class="ravg">${fmt(e.avg)} media</div>
-        </div>
-        <div class="ruses">${e.count} uso${e.count>1?'s':''}</div>
-        <div class="rbar"><div class="rbf" style="width:${(e.avg/maxAvg*100).toFixed(0)}%"></div></div>
-      </div>
-    </div>`).join(''):'<div class="empty"><p>Registra varios lavados</p></div>';
-
-  // Dryer correlation
-  const dc=document.getElementById('dryerCorrEl');
-  const dryerMap={};
-  durs.forEach(e=>{
-    const key=e.dryer!=null?dryerL[e.dryer]:'Sin dato';
-    if(!dryerMap[key])dryerMap[key]=[];
-    dryerMap[key].push(e.dur);
-  });
-  const dcEntries=Object.entries(dryerMap).filter(([,d])=>d.length>0).map(([n,d])=>({n,avg:d.reduce((a,b)=>a+b,0)/d.length,count:d.length})).sort((a,b)=>b.avg-a.avg);
-  if(dcEntries.length<2){dc.innerHTML='<div class="empty"><p>Necesitas mas registros con distintos secados</p></div>';}
-  else{
-    dc.innerHTML=`<div class="corr-grid">${dcEntries.map((e,i)=>`<div class="corr-cell ${i%2?'warm':''}"><div class="corr-v">${fmt(e.avg)}</div><div class="corr-l">${e.n} (${e.count})</div></div>`).join('')}</div>`;
-  }
-
-  // Summary
+  const wd=withDur();const durs=wd.filter(x=>x.dur!=null);
+  drawEvo(durs);
+  const p=predict();const sm=p?p.sm:{};
+  const ent=Object.entries(sm).map(([n,d])=>({n,avg:d.reduce((a,b)=>a+b,0)/d.length,c:d.length})).sort((a,b)=>b.avg-a.avg);
+  const mx=ent.length?ent[0].avg:1;
+  document.getElementById('rankEl').innerHTML=ent.length?ent.map((e,i)=>`<div class="ri"><div class="rn">${i+1}</div><div class="rinfo"><div style="display:flex;justify-content:space-between;align-items:center"><div class="rname">${e.n}</div><div class="ravg">${fmt(e.avg)} media</div></div><div class="ruses">${e.c} uso${e.c>1?'s':''}</div><div class="rbar"><div class="rbf" style="width:${(e.avg/mx*100).toFixed(0)}%"></div></div></div></div>`).join(''):'<div class="empty"><p>Registra varios lavados</p></div>';
+  const dm={};durs.forEach(e=>{const k=e.dryer!=null?dryerL[e.dryer]:'Sin dato';(dm[k]=dm[k]||[]).push(e.dur);});
+  const de=Object.entries(dm).map(([n,d])=>({n,avg:d.reduce((a,b)=>a+b,0)/d.length,c:d.length})).sort((a,b)=>b.avg-a.avg);
+  document.getElementById('dryerEl').innerHTML=de.length>=2?`<div class="cgrid">${de.map((e,i)=>`<div class="cc ${i%2?'w':''}"><div class="ccv">${fmt(e.avg)}</div><div class="ccl">${e.n} (${e.c})</div></div>`).join('')}</div>`:'<div class="empty"><p>Necesitas mas registros con distintos secados</p></div>';
   document.getElementById('sTot').textContent=D.washes.length;
   document.getElementById('sSh').textContent=D.shampoos.length;
   document.getElementById('sMax').textContent=durs.length?fmt(Math.max(...durs.map(x=>x.dur))):'--';
-  if(durs.length>=4){
-    const h=Math.floor(durs.length/2);
-    const a=durs.slice(0,h).map(x=>x.dur).reduce((a,b)=>a+b,0)/h;
-    const b=durs.slice(h).map(x=>x.dur).reduce((a,b)=>a+b,0)/(durs.length-h);
-    document.getElementById('sTrend').textContent=b>a*1.1?'Mejora':b<a*0.9?'Baja':'Estable';
-  }else document.getElementById('sTrend').textContent='--';
+  if(durs.length>=4){const h=Math.floor(durs.length/2);const a=durs.slice(0,h).map(x=>x.dur).reduce((a,b)=>a+b,0)/h;const b=durs.slice(h).map(x=>x.dur).reduce((a,b)=>a+b,0)/(durs.length-h);document.getElementById('sTrend').textContent=b>a*1.1?'Mejora':b<a*0.9?'Baja':'Estable';}else document.getElementById('sTrend').textContent='--';
 }
 
-function drawEvoChart(durs){
-  const canvas=document.getElementById('evoChart');
-  const wrap=canvas.parentElement;
-  const dpr=window.devicePixelRatio||1;
-  const minW=Math.max(wrap.offsetWidth, durs.length*44+60);
-  canvas.width=minW*dpr; canvas.height=140*dpr;
-  canvas.style.width=minW+'px'; canvas.style.height='140px';
-  const ctx=canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-  const W=minW,H=140,pad={t:16,r:20,b:32,l:36};
-  ctx.clearRect(0,0,W,H);
-  if(!durs.length){
-    ctx.fillStyle='#7aaaaa';ctx.font='13px Outfit,sans-serif';ctx.textAlign='center';
-    ctx.fillText('Sin datos todavia',W/2,H/2);return;
-  }
-  const vals=durs.map(x=>x.dur);
-  const maxV=Math.max(...vals,1);
-  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
-  const xStep=durs.length>1?cW/(durs.length-1):cW;
-  const pt=(v,i)=>({x:pad.l+(durs.length>1?i*xStep:cW/2),y:pad.t+cH*(1-v/maxV)});
-
-  // area fill
-  ctx.beginPath();
-  durs.forEach((d,i)=>{const p=pt(d.dur,i);i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);});
-  ctx.lineTo(pt(vals[vals.length-1],vals.length-1).x,pad.t+cH);
-  ctx.lineTo(pt(vals[0],0).x,pad.t+cH);
-  ctx.closePath();
-  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);
-  grad.addColorStop(0,'rgba(15,163,163,0.22)');grad.addColorStop(1,'rgba(15,163,163,0)');
-  ctx.fillStyle=grad;ctx.fill();
-
-  // line
-  ctx.beginPath();ctx.strokeStyle='#0fa3a3';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
-  durs.forEach((d,i)=>{const p=pt(d.dur,i);i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);});
-  ctx.stroke();
-
-  // dots + labels
-  durs.forEach((d,i)=>{
-    const p=pt(d.dur,i);
-    ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);
-    ctx.fillStyle='white';ctx.fill();ctx.strokeStyle='#0fa3a3';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#086b6b';ctx.font='bold 10px Outfit,sans-serif';ctx.textAlign='center';
-    ctx.fillText(fmt(d.dur),p.x,p.y-9);
-    // x label
-    const lbl=fmtDate(d.date);
-    ctx.fillStyle='#7aaaaa';ctx.font='9px Outfit,sans-serif';
-    ctx.fillText(lbl,p.x,H-6);
-  });
-
-  // avg line
-  const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
-  const avgY=pad.t+cH*(1-avg/maxV);
-  ctx.beginPath();ctx.setLineDash([4,4]);ctx.strokeStyle='#c4723a';ctx.lineWidth=1.2;
-  ctx.moveTo(pad.l,avgY);ctx.lineTo(W-pad.r,avgY);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='#c4723a';ctx.font='9px Outfit,sans-serif';ctx.textAlign='left';
-  ctx.fillText('media',pad.l+2,avgY-4);
+function drawEvo(durs){
+  const cv=document.getElementById('evo'),wrap=cv.parentElement,dpr=window.devicePixelRatio||1;
+  const W=Math.max(wrap.offsetWidth,durs.length*46+60),H=150;
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  if(!durs.length){ctx.fillStyle='#7aaaaa';ctx.font='13px Outfit';ctx.textAlign='center';ctx.fillText('Sin datos todavia',W/2,H/2);return;}
+  const vals=durs.map(x=>x.dur),mx=Math.max(...vals,1),pad={t:18,r:18,b:30,l:30},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b,xs=durs.length>1?cW/(durs.length-1):0;
+  const pt=(v,i)=>({x:pad.l+(durs.length>1?i*xs:cW/2),y:pad.t+cH*(1-v/mx)});
+  ctx.beginPath();durs.forEach((d,i)=>{const p=pt(d.dur,i);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});
+  const lp=pt(vals[vals.length-1],vals.length-1),fp=pt(vals[0],0);ctx.lineTo(lp.x,pad.t+cH);ctx.lineTo(fp.x,pad.t+cH);ctx.closePath();
+  const g=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);g.addColorStop(0,'rgba(15,163,163,.22)');g.addColorStop(1,'rgba(15,163,163,0)');ctx.fillStyle=g;ctx.fill();
+  ctx.beginPath();ctx.strokeStyle='#0fa3a3';ctx.lineWidth=2.5;ctx.lineJoin='round';durs.forEach((d,i)=>{const p=pt(d.dur,i);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});ctx.stroke();
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length,ay=pad.t+cH*(1-avg/mx);
+  ctx.beginPath();ctx.setLineDash([4,4]);ctx.strokeStyle='#c4723a';ctx.lineWidth=1.2;ctx.moveTo(pad.l,ay);ctx.lineTo(W-pad.r,ay);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#c4723a';ctx.font='9px Outfit';ctx.textAlign='left';ctx.fillText('media',pad.l+2,ay-4);
+  durs.forEach((d,i)=>{const p=pt(d.dur,i);ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#0fa3a3';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#086b6b';ctx.font='bold 10px Outfit';ctx.textAlign='center';ctx.fillText(fmt(d.dur),p.x,p.y-9);ctx.fillStyle='#7aaaaa';ctx.font='9px Outfit';ctx.fillText(fmtDate(d.date),p.x,H-6);});
 }
 
 function renderSettings(){
-  document.getElementById('notifHours').value=D.notifHours||2;
-  const lb=document.getElementById('lastBackupSub');
-  lb.textContent=D.lastBackup?'Ultimo: '+new Date(D.lastBackup).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'}):'Nunca exportado';
+  document.getElementById('notifH').value=D.notifHours||2;
+  document.getElementById('lastBk').textContent=D.lastBackup?new Date(D.lastBackup).toLocaleString('es-ES',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'Nunca';
+  const ns=document.getElementById('notifState');
+  if('Notification'in window){ns.textContent=Notification.permission==='granted'?'Notificaciones activadas (best-effort en iOS)':Notification.permission==='denied'?'Bloqueadas en ajustes del navegador':'Sin activar';}
+  else ns.textContent='No soportado en este navegador';
 }
 
-// ── EXPORT / IMPORT ────────────────────────────
+// ── BACKUP (con marca de fecha en TODOS los caminos) ──
+function markBackup(){D.lastBackup=new Date().toISOString();save();renderSettings();}
+function fname(ext){return 'scalp_backup_'+new Date().toISOString().slice(0,10)+'.'+ext;}
+
 function exportJSON(){
   const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='scalp_backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();
-  D.lastBackup=new Date().toISOString();save();renderSettings();
+  triggerDownload(blob,fname('json'));markBackup();toast('Backup JSON descargado');
 }
-
 function exportCSV(){
-  const headers=['fecha','champu','cuero_antes','costras_antes','costras_despues','secado','dia_siguiente','notas'];
-  const rows=D.washes.map(w=>[
-    new Date(w.date).toLocaleDateString('es-ES'),
-    w.shampoo,
-    w.scalp!=null?scalpL[w.scalp]:'',
-    w.costra!=null?costraL[w.costra]:'',
-    w.costraAfter!=null?costraAL[w.costraAfter]:'',
-    w.dryer!=null?dryerL[w.dryer]:'',
-    w.nextDay!=null?nextDayL[w.nextDay]:'',
-    (w.notes||'').replace(/,/g,';')
-  ].map(v=>`"${v}"`).join(','));
-  const csv='\uFEFF'+[headers.join(','),...rows].join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='scalp_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-  D.lastBackup=new Date().toISOString();save();renderSettings();
+  const head=['fecha','champu','cuero_antes','costras_antes','costras_despues','secado','dia_siguiente','notas'];
+  const rows=D.washes.map(w=>[new Date(w.date).toLocaleString('es-ES'),w.shampoo,w.scalp!=null?scalpL[w.scalp]:'',w.costra!=null?costraL[w.costra]:'',w.costraAfter!=null?costraAL[w.costraAfter]:'',w.dryer!=null?dryerL[w.dryer]:'',w.nextDay!=null?ndL[w.nextDay]:'',(w.notes||'').replace(/"/g,'""')].map(v=>`"${v}"`).join(','));
+  const csv='\uFEFF'+[head.join(','),...rows].join('\n');
+  triggerDownload(new Blob([csv],{type:'text/csv;charset=utf-8'}),fname('csv'));markBackup();toast('Backup CSV descargado');
+}
+function triggerDownload(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);}
+
+async function shareData(){
+  const json=JSON.stringify(D,null,2);
+  const file=new File([json],fname('json'),{type:'application/json'});
+  // Try native share with file (opens iOS share sheet -> Save to Files / iCloud)
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file],title:'Scalp backup'}); markBackup(); toast('Backup compartido'); return; }
+    catch(err){ if(err&&err.name==='AbortError'){return;} /* fall through */ }
+  }
+  // Fallback: plain download
+  exportJSON();
 }
 
 function importJSON(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=ev=>{
-    try{
-      const parsed=JSON.parse(ev.target.result);
-      if(!parsed.washes)throw new Error('invalid');
-      if(!confirm(`Importar ${parsed.washes.length} lavados? Se combinaran con los actuales.`))return;
-      // merge: add washes not already present by date
-      const existing=new Set(D.washes.map(w=>w.date));
-      parsed.washes.forEach(w=>{if(!existing.has(w.date))D.washes.push(w);});
-      parsed.shampoos&&parsed.shampoos.forEach(s=>{if(!D.shampoos.includes(s))D.shampoos.push(s);});
-      D.washes.sort((a,b)=>new Date(a.date)-new Date(b.date));
-      save();renderAll();alert('Importado correctamente.');
-    }catch{alert('Archivo no valido.');}
-  };
-  r.readAsText(f);
-  e.target.value='';
+  r.onload=ev=>{try{
+    const p=JSON.parse(ev.target.result);
+    if(!p||!Array.isArray(p.washes))throw 0;
+    if(!confirm(`Importar ${p.washes.length} lavados? Se combinaran con los actuales (sin duplicar).`))return;
+    const ex=new Set(D.washes.map(w=>w.date));
+    p.washes.forEach(w=>{if(!ex.has(w.date))D.washes.push(w);});
+    (p.shampoos||[]).forEach(s=>{if(!D.shampoos.includes(s))D.shampoos.push(s);});
+    D.washes.sort((a,b)=>new Date(a.date)-new Date(b.date));
+    save();renderAll();toast('Datos importados');
+  }catch{toast('Archivo no valido');}};
+  r.readAsText(f);e.target.value='';
 }
 
-function shareData(){
-  const json=JSON.stringify(D,null,2);
-  const blob=new Blob([json],{type:'application/json'});
-  const file=new File([blob],'scalp_backup.json',{type:'application/json'});
-  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-    navigator.share({files:[file],title:'Scalp backup'}).catch(()=>exportJSON());
-  }else exportJSON();
-}
+function clearAll(){if(!confirm('Borrar TODOS los datos? No se puede deshacer.'))return;D={washes:[],shampoos:[],notifHours:2,lastBackup:null};save();renderAll();toast('Datos borrados');}
 
-function clearAll(){
-  if(!confirm('Borrar TODOS los datos? Esta accion no se puede deshacer.'))return;
-  D={washes:[],shampoos:[],notifHours:2,lastBackup:null};save();renderAll();
+// ── NOTIFICATIONS (Service Worker, best-effort) ──
+let swReg=null;
+if('serviceWorker'in navigator){
+  navigator.serviceWorker.register('sw.js').then(r=>{swReg=r;}).catch(()=>{});
 }
-
-function saveNotifPref(){
-  D.notifHours=parseInt(document.getElementById('notifHours').value)||2;
-  save();scheduleNotif();
+async function enableNotif(){
+  D.notifHours=Math.min(48,Math.max(1,parseInt(document.getElementById('notifH').value)||2));save();
+  if(!('Notification'in window)){toast('Notificaciones no soportadas aqui');return;}
+  const perm=await Notification.requestPermission();
+  renderSettings();
+  if(perm==='granted'){scheduleNotif();toast('Avisos activados (pueden no llegar con la app cerrada en iOS)');}
+  else toast('Permiso de notificaciones no concedido');
 }
-
-// ── NOTIFICATIONS ──────────────────────────────
-async function requestNotif(){
-  if(!('Notification'in window)){alert('Tu navegador no soporta notificaciones.');return;}
-  await Notification.requestPermission();
-  scheduleNotif();
-  // weekly backup reminder
-  const MS_WEEK=7*24*3600*1000;
-  if(Notification.permission==='granted'){
-    const lastB=D.lastBackup?new Date(D.lastBackup):null;
-    const sinceBackup=lastB?(Date.now()-lastB.getTime()):MS_WEEK+1;
-    if(sinceBackup>=MS_WEEK){
-      setTimeout(()=>new Notification('Scalp · Recuerda hacer backup',{body:'Exporta tus datos para no perderlos.',icon:'apple-touch-icon.png'}),3000);
-    }
-    setInterval(()=>{
-      const lb=D.lastBackup?new Date(D.lastBackup):null;
-      if(!lb||(Date.now()-lb.getTime())>=MS_WEEK){
-        new Notification('Scalp · Recuerda hacer backup',{body:'Han pasado 7 dias. Exporta tus datos.',icon:'apple-touch-icon.png'});
-      }
-    },MS_WEEK);
-  }
-}
-
 function scheduleNotif(){
   if(!('Notification'in window)||Notification.permission!=='granted')return;
-  const st=currentStatus();if(!st)return;
-  const hours=D.notifHours||2;
-  const remMs=(st.pdDays-st.elapsed)*86400000 - hours*3600000;
-  if(remMs>0&&remMs<7*86400000){
-    setTimeout(()=>new Notification('Scalp · Pronto toca lavarse',{body:`En ${hours}h llegaras a tu media. Prepara el champu.`,icon:'apple-touch-icon.png'}),remMs);
-  }
+  const st=status();if(!st)return;
+  const at=Date.now()+((st.pd-st.el)*86400000 - (D.notifHours||2)*3600000);
+  if(at<=Date.now()||at-Date.now()>14*86400000)return;
+  const msg={type:'schedule',id:'wash-reminder',at,title:'Scalp · Pronto toca lavarse',body:`En unas ${D.notifHours||2}h llegaras a tu media. Prepara el champu.`};
+  if(swReg&&swReg.active)swReg.active.postMessage(msg);
+  else if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.controller.postMessage(msg);
 }
 
-// ── INIT ───────────────────────────────────────
+// ── INIT ──
 load();
-// Splash
-window.addEventListener('load',()=>{
-  setTimeout(()=>{document.getElementById('splash').classList.add('gone');},1400);
-});
+window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('splash').classList.add('gone'),1600);});
 renderAll();
 setInterval(renderHeader,60000);
+// reschedule when app regains focus
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderHeader();scheduleNotif();}});
 </script>
 </body>
 </html>
