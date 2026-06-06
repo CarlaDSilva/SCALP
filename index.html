@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Scalp">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Scalp</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-deep:    #0a7c7c;
+    --teal:         #12a9a9;
+    --teal-light:   #4ecdc4;
+    --teal-pale:    #a8e6e3;
+    --teal-mist:    #e0f5f4;
+    --choc-dark:    #4a2000;
+    --choc:         #7c3d00;
+    --choc-mid:     #a0551a;
+    --choc-warm:    #c8793a;
+    --sand:         #f5ede3;
+    --white:        #ffffff;
+    --text-dark:    #1a2e2e;
+    --text-mid:     #3d6060;
+    --text-soft:    #7aa8a8;
+    --radius:       18px;
+    --radius-sm:    10px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--teal-mist);
+    color: var(--text-dark);
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: linear-gradient(160deg, var(--teal-deep) 0%, var(--teal) 60%, var(--teal-light) 100%);
+    padding: 56px 24px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-header::before {
+    content:'';
+    position:absolute;
+    width:240px; height:240px;
+    border-radius:50%;
+    background: rgba(255,255,255,0.07);
+    top:-80px; right:-60px;
+  }
+  .app-header::after {
+    content:'';
+    position:absolute;
+    width:140px; height:140px;
+    border-radius:50%;
+    background: rgba(255,255,255,0.05);
+    bottom:-40px; left:20px;
+  }
+  .header-top {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:24px;
+  }
+  .app-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: white;
+    letter-spacing: -0.5px;
+  }
+  .header-icon-btn {
+    width:40px; height:40px;
+    background: rgba(255,255,255,0.15);
+    border-radius:50%;
+    border:none;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    backdrop-filter: blur(8px);
+  }
+  .header-icon-btn svg { stroke:white; }
+
+  /* STATUS CARD */
+  .status-card {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .status-label {
+    font-size:11px; font-weight:600; letter-spacing:1.5px;
+    text-transform:uppercase; color:rgba(255,255,255,0.7);
+    margin-bottom:6px;
+  }
+  .status-main {
+    font-family:'DM Serif Display',serif;
+    font-size:36px; color:white; line-height:1;
+    margin-bottom:4px;
+  }
+  .status-sub {
+    font-size:13px; color:rgba(255,255,255,0.75);
+  }
+  .status-bar-wrap {
+    margin-top:14px;
+    background: rgba(255,255,255,0.2);
+    border-radius:99px; height:6px;
+    overflow:hidden;
+  }
+  .status-bar-fill {
+    height:100%; border-radius:99px;
+    background: linear-gradient(90deg, var(--teal-pale), white);
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* CONTENT */
+  .content {
+    padding: 20px 16px 100px;
+    display:flex; flex-direction:column; gap:16px;
+  }
+
+  /* CARD */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    overflow:hidden;
+    box-shadow: 0 2px 16px rgba(10,124,124,0.08);
+  }
+  .card-header {
+    padding:16px 20px 0;
+    display:flex; align-items:center; gap:10px;
+  }
+  .card-icon {
+    width:32px; height:32px;
+    background: var(--teal-mist);
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card-icon svg { stroke: var(--teal-deep); }
+  .card-title {
+    font-size:13px; font-weight:600;
+    letter-spacing:0.5px;
+    color: var(--text-mid);
+    text-transform:uppercase;
+  }
+  .card-body { padding:16px 20px 20px; }
+
+  /* BIG CTA BUTTON */
+  .btn-wash {
+    width:100%;
+    padding:18px;
+    background: linear-gradient(135deg, var(--choc) 0%, var(--choc-warm) 100%);
+    color:white;
+    border:none;
+    border-radius: var(--radius);
+    font-family:'DM Sans',sans-serif;
+    font-size:17px; font-weight:600;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    box-shadow: 0 6px 24px rgba(124,61,0,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .btn-wash:active { transform:scale(0.97); box-shadow:0 2px 10px rgba(124,61,0,0.2); }
+  .btn-wash::before {
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    transform:translateX(-100%);
+    animation: shimmer 2.5s infinite;
+  }
+  @keyframes shimmer { to { transform:translateX(200%); } }
+
+  /* SHAMPOO INPUT */
+  .shampoo-input-wrap {
+    display:flex; gap:8px; margin-bottom:14px;
+  }
+  .shampoo-input {
+    flex:1;
+    padding:12px 14px;
+    border:1.5px solid var(--teal-pale);
+    border-radius: var(--radius-sm);
+    font-family:'DM Sans',sans-serif;
+    font-size:15px;
+    color: var(--text-dark);
+    background: var(--teal-mist);
+    outline:none;
+    transition:border-color 0.2s;
+  }
+  .shampoo-input:focus { border-color: var(--teal); }
+  .btn-add-shampoo {
+    padding:12px 16px;
+    background: var(--teal-mist);
+    border:1.5px solid var(--teal-pale);
+    border-radius: var(--radius-sm);
+    color: var(--teal-deep);
+    font-weight:600; font-size:20px;
+    cursor:pointer;
+    transition:background 0.15s;
+  }
+  .btn-add-shampoo:active { background: var(--teal-pale); }
+
+  .shampoo-pills { display:flex; flex-wrap:wrap; gap:8px; }
+  .shampoo-pill {
+    padding:7px 14px;
+    border-radius:99px;
+    border:1.5px solid var(--teal-pale);
+    background:white;
+    font-size:13px; font-weight:500;
+    color: var(--text-mid);
+    cursor:pointer;
+    transition:all 0.15s;
+  }
+  .shampoo-pill.active {
+    background: var(--teal-deep);
+    border-color: var(--teal-deep);
+    color:white;
+  }
+  .shampoo-pill.choc {
+    background: var(--choc);
+    border-color: var(--choc);
+    color:white;
+  }
+
+  /* HISTORY */
+  .history-item {
+    display:flex; align-items:center;
+    padding:14px 0;
+    border-bottom:1px solid var(--teal-mist);
+    gap:14px;
+  }
+  .history-item:last-child { border-bottom:none; }
+  .history-dot {
+    width:10px; height:10px;
+    border-radius:50%;
+    background: var(--teal-light);
+    flex-shrink:0;
+  }
+  .history-dot.old { background: var(--choc-warm); }
+  .history-info { flex:1; }
+  .history-date {
+    font-size:14px; font-weight:600; color:var(--text-dark);
+  }
+  .history-shampoo {
+    font-size:12px; color:var(--text-soft); margin-top:2px;
+  }
+  .history-duration {
+    font-size:13px; font-weight:600;
+    color: var(--teal-deep);
+    white-space:nowrap;
+  }
+
+  /* PREDICTION */
+  .prediction-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .pred-item {
+    background: var(--teal-mist);
+    border-radius: var(--radius-sm);
+    padding:14px;
+  }
+  .pred-value {
+    font-family:'DM Serif Display',serif;
+    font-size:28px; color:var(--teal-deep);
+    line-height:1;
+  }
+  .pred-label {
+    font-size:11px; font-weight:600;
+    letter-spacing:0.8px; text-transform:uppercase;
+    color:var(--text-soft); margin-top:4px;
+  }
+  .pred-choc {
+    background: #fdf1e8;
+  }
+  .pred-choc .pred-value { color:var(--choc); }
+
+  /* SHAMPOO RANKINGS */
+  .rank-item {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid var(--teal-mist);
+  }
+  .rank-item:last-child { border-bottom:none; }
+  .rank-num {
+    font-family:'DM Serif Display',serif;
+    font-size:20px; color:var(--teal-pale);
+    width:24px; text-align:center;
+  }
+  .rank-name { flex:1; font-size:14px; font-weight:500; }
+  .rank-avg {
+    font-size:13px; font-weight:600;
+    color:var(--choc-mid);
+  }
+  .rank-bar-wrap {
+    width:100%; height:4px;
+    background:var(--teal-mist);
+    border-radius:99px; margin-top:6px;
+  }
+  .rank-bar { height:100%; border-radius:99px; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+
+  /* ALERT BANNER */
+  .alert-banner {
+    background: linear-gradient(135deg, var(--choc) 0%, var(--choc-warm) 100%);
+    border-radius: var(--radius);
+    padding:16px 20px;
+    color:white;
+    display:flex; align-items:center; gap:12px;
+    box-shadow:0 4px 20px rgba(124,61,0,0.25);
+  }
+  .alert-banner.hidden { display:none; }
+  .alert-icon {
+    width:36px; height:36px;
+    background:rgba(255,255,255,0.2);
+    border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .alert-text { flex:1; }
+  .alert-title { font-weight:700; font-size:15px; }
+  .alert-sub { font-size:12px; opacity:0.8; margin-top:2px; }
+
+  /* NAV */
+  .bottom-nav {
+    position:fixed; bottom:0; left:0; right:0;
+    background:white;
+    border-top:1px solid var(--teal-mist);
+    display:flex;
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+    box-shadow:0 -4px 20px rgba(10,124,124,0.08);
+  }
+  .nav-btn {
+    flex:1;
+    padding:14px 0 8px;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    background:none; border:none;
+    cursor:pointer;
+    color: var(--text-soft);
+    font-size:10px; font-weight:600; letter-spacing:0.5px;
+    text-transform:uppercase;
+    transition:color 0.15s;
+  }
+  .nav-btn.active { color: var(--teal-deep); }
+  .nav-btn svg { stroke-width:1.8; }
+
+  /* TABS */
+  .tab-content { display:none; }
+  .tab-content.active { display:flex; flex-direction:column; gap:16px; }
+
+  /* MODAL */
+  .modal-overlay {
+    position:fixed; inset:0;
+    background:rgba(10,46,46,0.6);
+    backdrop-filter:blur(6px);
+    z-index:100;
+    display:flex; align-items:flex-end;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s;
+  }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal-sheet {
+    background:white;
+    border-radius:24px 24px 0 0;
+    width:100%;
+    padding:24px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    transform:translateY(100%);
+    transition:transform 0.35s cubic-bezier(.4,0,.2,1);
+  }
+  .modal-overlay.open .modal-sheet { transform:translateY(0); }
+  .modal-handle {
+    width:40px; height:4px;
+    background:var(--teal-pale);
+    border-radius:99px;
+    margin:0 auto 20px;
+  }
+  .modal-title {
+    font-family:'DM Serif Display',serif;
+    font-size:22px; margin-bottom:20px;
+  }
+  .rating-row {
+    display:flex; gap:8px; margin-bottom:16px;
+  }
+  .rating-btn {
+    flex:1; padding:12px 8px;
+    border:1.5px solid var(--teal-pale);
+    border-radius:10px;
+    background:var(--teal-mist);
+    font-size:12px; font-weight:600;
+    color:var(--text-mid);
+    cursor:pointer;
+    text-align:center;
+    transition:all 0.15s;
+  }
+  .rating-btn.sel { background:var(--teal-deep); border-color:var(--teal-deep); color:white; }
+  .rating-label { font-size:12px; color:var(--text-soft); margin-bottom:8px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+  .modal-confirm {
+    width:100%; padding:17px;
+    background: linear-gradient(135deg, var(--teal-deep), var(--teal));
+    color:white; border:none; border-radius:14px;
+    font-family:'DM Sans',sans-serif;
+    font-size:16px; font-weight:600;
+    cursor:pointer; margin-top:8px;
+    transition:transform 0.15s;
+  }
+  .modal-confirm:active { transform:scale(0.98); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align:center; padding:30px 20px;
+    color:var(--text-soft);
+  }
+  .empty-state svg { stroke:var(--teal-pale); margin-bottom:12px; }
+  .empty-state p { font-size:14px; }
+
+  .tag-new {
+    display:inline-block;
+    background:var(--teal-pale);
+    color:var(--teal-deep);
+    font-size:10px; font-weight:700;
+    padding:2px 7px; border-radius:99px;
+    vertical-align:middle; margin-left:6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- MODAL: Registro lavado -->
+<div class="modal-overlay" id="washModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Registrar lavado</div>
+
+    <div class="rating-label">Champu usado</div>
+    <div class="shampoo-input-wrap">
+      <input class="shampoo-input" id="modalShampooInput" placeholder="Nombre del champu...">
+      <button class="btn-add-shampoo" onclick="addShampooFromModal()">+</button>
+    </div>
+    <div class="shampoo-pills" id="modalPills" style="margin-bottom:16px;"></div>
+
+    <div class="rating-label">Estado del cuero cabelludo antes</div>
+    <div class="rating-row" id="scalpRating">
+      <button class="rating-btn" onclick="selectRating('scalp',1,this)">Muy graso</button>
+      <button class="rating-btn" onclick="selectRating('scalp',2,this)">Graso</button>
+      <button class="rating-btn" onclick="selectRating('scalp',3,this)">Normal</button>
+      <button class="rating-btn" onclick="selectRating('scalp',4,this)">Limpio</button>
+    </div>
+
+    <div class="rating-label">Costras presentes</div>
+    <div class="rating-row" id="costratingRow">
+      <button class="rating-btn" onclick="selectRating('costra',0,this)">No</button>
+      <button class="rating-btn" onclick="selectRating('costra',1,this)">Pocas</button>
+      <button class="rating-btn" onclick="selectRating('costra',2,this)">Muchas</button>
+    </div>
+
+    <button class="modal-confirm" onclick="confirmWash()">Guardar lavado</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-top">
+    <div class="app-title">Scalp</div>
+    <button class="header-icon-btn" onclick="openModal()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="status-card" id="statusCard">
+    <div class="status-label">Estado actual</div>
+    <div class="status-main" id="statusMain">--</div>
+    <div class="status-sub" id="statusSub">Sin registros aun</div>
+    <div class="status-bar-wrap">
+      <div class="status-bar-fill" id="statusBar" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" onclick="showTab('home',this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/>
+    </svg>
+    Inicio
+  </button>
+  <button class="nav-btn" onclick="showTab('history',this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
+    </svg>
+    Historial
+  </button>
+  <button class="nav-btn" onclick="showTab('stats',this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+    </svg>
+    Stats
+  </button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- TAB HOME -->
+  <div class="tab-content active" id="tab-home">
+
+    <div class="alert-banner hidden" id="alertBanner">
+      <div class="alert-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+      </div>
+      <div class="alert-text">
+        <div class="alert-title" id="alertTitle">Es momento de lavarte el pelo</div>
+        <div class="alert-sub" id="alertSub"></div>
+      </div>
+    </div>
+
+    <button class="btn-wash" onclick="openModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      Registrar lavado de hoy
+    </button>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>
+          </svg>
+        </div>
+        <div class="card-title">Prediccion inteligente</div>
+      </div>
+      <div class="card-body">
+        <div class="prediction-grid" id="predGrid">
+          <div class="pred-item">
+            <div class="pred-value" id="predDays">--</div>
+            <div class="pred-label">Dias limpio</div>
+          </div>
+          <div class="pred-item pred-choc">
+            <div class="pred-value" id="predNext">--</div>
+            <div class="pred-label">Proximo lavado</div>
+          </div>
+          <div class="pred-item">
+            <div class="pred-value" id="predAvg">--</div>
+            <div class="pred-label">Media historica</div>
+          </div>
+          <div class="pred-item pred-choc">
+            <div class="pred-value" id="predBest">--</div>
+            <div class="pred-label">Mejor champu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/>
+          </svg>
+        </div>
+        <div class="card-title">Ultimo lavado</div>
+      </div>
+      <div class="card-body" id="lastWashInfo">
+        <div class="empty-state">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          <p>Aun no hay registros.<br>Pulsa + para empezar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB HISTORIAL -->
+  <div class="tab-content" id="tab-history">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+          </svg>
+        </div>
+        <div class="card-title">Todos los lavados</div>
+      </div>
+      <div class="card-body" id="historyList">
+        <div class="empty-state">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p>Sin historial todavia.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB STATS -->
+  <div class="tab-content" id="tab-stats">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/>
+          </svg>
+        </div>
+        <div class="card-title">Ranking de champus</div>
+      </div>
+      <div class="card-body" id="rankList">
+        <div class="empty-state">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <p>Registra varios lavados<br>para ver estadisticas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <div class="card-title">Resumen general</div>
+      </div>
+      <div class="card-body">
+        <div class="prediction-grid" id="summaryGrid">
+          <div class="pred-item">
+            <div class="pred-value" id="sumTotal">0</div>
+            <div class="pred-label">Lavados totales</div>
+          </div>
+          <div class="pred-item pred-choc">
+            <div class="pred-value" id="sumShampoos">0</div>
+            <div class="pred-label">Champus probados</div>
+          </div>
+          <div class="pred-item">
+            <div class="pred-value" id="sumStreak">--</div>
+            <div class="pred-label">Racha mas larga</div>
+          </div>
+          <div class="pred-item pred-choc">
+            <div class="pred-value" id="sumTrend">--</div>
+            <div class="pred-label">Tendencia</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---- DATA LAYER ----
+const STORE_KEY = 'scalp_v2';
+let state = {
+  washes: [],        // [{date, shampoo, scalpRating, costraRating, durationDays}]
+  shampoos: [],      // known shampoos
+  selectedShampoo: null,
+  ratings: { scalp: null, costra: null }
+};
+
+function load() {
+  const raw = localStorage.getItem(STORE_KEY);
+  if (raw) {
+    try { const d = JSON.parse(raw); state.washes = d.washes||[]; state.shampoos = d.shampoos||[]; } catch(e){}
+  }
+}
+function save() {
+  localStorage.setItem(STORE_KEY, JSON.stringify({ washes: state.washes, shampoos: state.shampoos }));
+}
+
+// ---- INTELLIGENT PREDICTION ENGINE ----
+function computeDurations() {
+  const w = [...state.washes].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  for (let i=1; i<w.length; i++) {
+    const days = (new Date(w[i].date)-new Date(w[i-1].date))/(86400000);
+    w[i-1].durationDays = Math.round(days*10)/10;
+  }
+  return w;
+}
+
+function predictNextWash() {
+  const w = computeDurations().filter(x=>x.durationDays!=null);
+  if (w.length === 0) return null;
+
+  // Weighted average: more recent = more weight
+  let totalWeight = 0, totalDays = 0;
+  w.forEach((entry, i) => {
+    const weight = Math.pow(1.4, i); // exponential recency bias
+    totalDays += entry.durationDays * weight;
+    totalWeight += weight;
+  });
+  const baseAvg = totalDays / totalWeight;
+
+  // Per-shampoo adjustment
+  const shampooMap = {};
+  w.forEach(entry => {
+    if (!shampooMap[entry.shampoo]) shampooMap[entry.shampoo] = [];
+    shampooMap[entry.shampoo].push(entry.durationDays);
+  });
+
+  const lastShampoo = state.washes.length > 0
+    ? state.washes[state.washes.length-1].shampoo : null;
+  let adjustment = 0;
+  if (lastShampoo && shampooMap[lastShampoo] && shampooMap[lastShampoo].length >= 2) {
+    const shampooAvg = shampooMap[lastShampoo].reduce((a,b)=>a+b,0)/shampooMap[lastShampoo].length;
+    adjustment = (shampooAvg - baseAvg) * 0.5;
+  }
+
+  return {
+    predictedDays: Math.max(0.5, baseAvg + adjustment),
+    baseAvg,
+    shampooMap
+  };
+}
+
+function getBestShampoo(shampooMap) {
+  if (!shampooMap) return '--';
+  let best = null, bestAvg = 0;
+  Object.entries(shampooMap).forEach(([name, durations]) => {
+    if (durations.length === 0) return;
+    const avg = durations.reduce((a,b)=>a+b,0)/durations.length;
+    if (avg > bestAvg) { bestAvg = avg; best = name; }
+  });
+  return best || '--';
+}
+
+function getCurrentStatus() {
+  if (state.washes.length === 0) return null;
+  const last = state.washes[state.washes.length-1];
+  const pred = predictNextWash();
+  const hoursElapsed = (Date.now() - new Date(last.date)) / 3600000;
+  const daysElapsed = hoursElapsed / 24;
+  const predictedDays = pred ? pred.predictedDays : 1;
+  const pct = Math.min(1, daysElapsed / predictedDays);
+  return { daysElapsed, predictedDays, pct, last };
+}
+
+// ---- UI ----
+function formatDate(d) {
+  const now = new Date();
+  const date = new Date(d);
+  const diffDays = Math.floor((now-date)/86400000);
+  if (diffDays === 0) return 'Hoy';
+  if (diffDays === 1) return 'Ayer';
+  return date.toLocaleDateString('es-ES', { day:'numeric', month:'short' });
+}
+
+function formatDuration(days) {
+  if (!days) return '?';
+  if (days < 1) return Math.round(days*24)+'h';
+  return days.toFixed(1)+'d';
+}
+
+function updateHeader() {
+  const st = getCurrentStatus();
+  const pred = predictNextWash();
+
+  if (!st) {
+    document.getElementById('statusMain').textContent = '--';
+    document.getElementById('statusSub').textContent = 'Sin registros aun';
+    document.getElementById('statusBar').style.width = '0%';
+    return;
+  }
+
+  const hoursAgo = Math.round(st.daysElapsed * 24);
+  const daysAgo = Math.floor(st.daysElapsed);
+
+  if (hoursAgo < 24) {
+    document.getElementById('statusMain').textContent = 'Recien lavado';
+    document.getElementById('statusSub').textContent = `Hace ${hoursAgo}h · ${st.last.shampoo || 'sin champu'}`;
+  } else {
+    document.getElementById('statusMain').textContent = `${daysAgo}d ${Math.round((st.daysElapsed%1)*24)}h`;
+    document.getElementById('statusSub').textContent = `Desde el lavado · ${st.last.shampoo || 'sin champu'}`;
+  }
+  document.getElementById('statusBar').style.width = (st.pct*100)+'%';
+
+  // Alert
+  const alertEl = document.getElementById('alertBanner');
+  if (st.pct >= 0.9) {
+    alertEl.classList.remove('hidden');
+    if (st.pct >= 1) {
+      document.getElementById('alertTitle').textContent = 'Toca lavarse el pelo';
+      document.getElementById('alertSub').textContent = `Han pasado ${formatDuration(st.daysElapsed)} · Superaste tu media`;
+    } else {
+      document.getElementById('alertTitle').textContent = 'Pronto deberas lavarte el pelo';
+      document.getElementById('alertSub').textContent = `Llevas ${formatDuration(st.daysElapsed)} · Tu media es ${formatDuration(st.predictedDays)}`;
+    }
+  } else {
+    alertEl.classList.add('hidden');
+  }
+
+  // Predictions
+  if (pred) {
+    const remaining = Math.max(0, pred.predictedDays - st.daysElapsed);
+    document.getElementById('predDays').textContent = formatDuration(st.daysElapsed);
+    const nextDate = new Date(Date.now() + remaining*86400000);
+    document.getElementById('predNext').textContent = remaining < 0.5
+      ? 'Hoy' : nextDate.toLocaleDateString('es-ES',{weekday:'short',day:'numeric'});
+    document.getElementById('predAvg').textContent = formatDuration(pred.baseAvg);
+    document.getElementById('predBest').textContent = getBestShampoo(pred.shampooMap);
+  }
+}
+
+function updateLastWash() {
+  const el = document.getElementById('lastWashInfo');
+  if (state.washes.length === 0) {
+    el.innerHTML = `<div class="empty-state">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>
+      <p>Aun no hay registros.<br>Pulsa + para empezar.</p>
+    </div>`;
+    return;
+  }
+  const last = state.washes[state.washes.length-1];
+  const scalpLabels = ['','Muy graso','Graso','Normal','Limpio'];
+  const costraLabels = ['Sin costras','Pocas costras','Muchas costras'];
+  el.innerHTML = `
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="flex:1">
+        <div style="font-size:13px;color:var(--text-soft);margin-bottom:4px">${formatDate(last.date)}</div>
+        <div style="font-size:17px;font-weight:600;color:var(--text-dark)">${last.shampoo || 'Sin champu registrado'}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      ${last.scalpRating ? `<span style="padding:5px 12px;background:var(--teal-mist);border-radius:99px;font-size:12px;font-weight:600;color:var(--teal-deep)">${scalpLabels[last.scalpRating]}</span>` : ''}
+      ${last.costraRating!=null ? `<span style="padding:5px 12px;background:#fdf1e8;border-radius:99px;font-size:12px;font-weight:600;color:var(--choc-mid)">${costraLabels[last.costraRating]}</span>` : ''}
+    </div>
+  `;
+}
+
+function updateHistory() {
+  const el = document.getElementById('historyList');
+  const w = computeDurations();
+  if (w.length === 0) {
+    el.innerHTML = `<div class="empty-state"><p>Sin historial todavia.</p></div>`;
+    return;
+  }
+  const sorted = [...w].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  el.innerHTML = sorted.map((entry, i) => `
+    <div class="history-item">
+      <div class="history-dot ${i > 0 ? 'old':''}"></div>
+      <div class="history-info">
+        <div class="history-date">${formatDate(entry.date)}</div>
+        <div class="history-shampoo">${entry.shampoo || 'Sin champu'}</div>
+      </div>
+      ${entry.durationDays!=null ? `<div class="history-duration">${formatDuration(entry.durationDays)}</div>` : '<div class="history-duration" style="color:var(--teal-light)">actual</div>'}
+    </div>
+  `).join('');
+}
+
+function updateStats() {
+  const pred = predictNextWash();
+  const shampooMap = pred ? pred.shampooMap : {};
+
+  // Ranking
+  const rankEl = document.getElementById('rankList');
+  const entries = Object.entries(shampooMap).map(([name, durations]) => ({
+    name,
+    avg: durations.reduce((a,b)=>a+b,0)/durations.length,
+    count: durations.length
+  })).sort((a,b)=>b.avg-a.avg);
+
+  const maxAvg = entries.length > 0 ? entries[0].avg : 1;
+
+  if (entries.length === 0) {
+    rankEl.innerHTML = `<div class="empty-state"><p>Registra varios lavados<br>para ver estadisticas.</p></div>`;
+  } else {
+    rankEl.innerHTML = entries.map((e,i)=>`
+      <div class="rank-item">
+        <div class="rank-num">${i+1}</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div class="rank-name">${e.name}</div>
+            <div class="rank-avg">${formatDuration(e.avg)} media</div>
+          </div>
+          <div style="font-size:11px;color:var(--text-soft);margin-top:2px">${e.count} uso${e.count>1?'s':''}</div>
+          <div class="rank-bar-wrap"><div class="rank-bar" style="width:${(e.avg/maxAvg*100).toFixed(0)}%"></div></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Summary
+  document.getElementById('sumTotal').textContent = state.washes.length;
+  document.getElementById('sumShampoos').textContent = Object.keys(shampooMap).length || state.shampoos.length;
+
+  const durations = computeDurations().filter(x=>x.durationDays!=null).map(x=>x.durationDays);
+  const maxStreak = durations.length > 0 ? Math.max(...durations) : null;
+  document.getElementById('sumStreak').textContent = maxStreak ? formatDuration(maxStreak) : '--';
+
+  // Trend: compare first half vs second half
+  if (durations.length >= 4) {
+    const half = Math.floor(durations.length/2);
+    const firstHalf = durations.slice(0,half).reduce((a,b)=>a+b,0)/half;
+    const secondHalf = durations.slice(half).reduce((a,b)=>a+b,0)/(durations.length-half);
+    if (secondHalf > firstHalf*1.1) document.getElementById('sumTrend').textContent = 'Mejorando';
+    else if (secondHalf < firstHalf*0.9) document.getElementById('sumTrend').textContent = 'Bajando';
+    else document.getElementById('sumTrend').textContent = 'Estable';
+  } else {
+    document.getElementById('sumTrend').textContent = '--';
+  }
+}
+
+function renderAll() {
+  updateHeader();
+  updateLastWash();
+  updateHistory();
+  updateStats();
+}
+
+// ---- MODAL ----
+function openModal() {
+  state.ratings = { scalp: null, costra: null };
+  state.selectedShampoo = null;
+  renderModalPills();
+  document.querySelectorAll('.rating-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('modalShampooInput').value = '';
+  document.getElementById('washModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('washModal').classList.remove('open');
+}
+
+document.getElementById('washModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function renderModalPills() {
+  const el = document.getElementById('modalPills');
+  el.innerHTML = state.shampoos.map(s => `
+    <button class="shampoo-pill ${s===state.selectedShampoo?'active':''}" onclick="selectShampoo('${s}')">${s}</button>
+  `).join('');
+}
+
+function selectShampoo(name) {
+  state.selectedShampoo = name;
+  document.getElementById('modalShampooInput').value = name;
+  renderModalPills();
+}
+
+function addShampooFromModal() {
+  const val = document.getElementById('modalShampooInput').value.trim();
+  if (!val) return;
+  if (!state.shampoos.includes(val)) {
+    state.shampoos.push(val);
+    save();
+  }
+  selectShampoo(val);
+}
+
+function selectRating(type, val, btn) {
+  state.ratings[type] = val;
+  btn.closest('.rating-row, [id$="Row"]').querySelectorAll('.rating-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function confirmWash() {
+  const shampooInput = document.getElementById('modalShampooInput').value.trim();
+  const shampoo = shampooInput || state.selectedShampoo || null;
+  if (shampoo && !state.shampoos.includes(shampoo)) {
+    state.shampoos.push(shampoo);
+  }
+  state.washes.push({
+    date: new Date().toISOString(),
+    shampoo: shampoo || 'Sin champu',
+    scalpRating: state.ratings.scalp,
+    costraRating: state.ratings.costra
+  });
+  save();
+  closeModal();
+  renderAll();
+}
+
+// ---- TABS ----
+function showTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab==='stats') updateStats();
+  if (tab==='history') updateHistory();
+}
+
+// ---- INIT ----
+load();
+renderAll();
+
+// Auto-refresh status bar every minute
+setInterval(() => {
+  updateHeader();
+}, 60000);
+</script>
+</body>
+</html>
