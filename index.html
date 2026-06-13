@@ -18,7 +18,12 @@
   --teal-deep:#086b6b;--teal:#0fa3a3;--teal-light:#3dcfcf;--teal-pale:#b2e8e8;--teal-mist:#e8f8f8;
   --choc:#6b3000;--choc-mid:#9a4f18;--choc-warm:#c4723a;
   --text-dark:#162828;--text-mid:#3a5e5e;--text-soft:#7aaaaa;
-  --nav-h:60px;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);
+  --nav-h:60px;
+  --sb:env(safe-area-inset-bottom,0px);
+  --st:env(safe-area-inset-top,0px);
+  /* iOS PWA: safe-area-inset-bottom can be 0 even with home indicator.
+     We use a JS-measured value set on :root via --real-sb, falling back to 20px */
+  --real-sb:20px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 input,textarea{-webkit-user-select:text;user-select:text;}
@@ -52,7 +57,16 @@ body{touch-action:pan-x pan-y;}
 @keyframes bounce{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-7px);opacity:1}}
 
 /* SHELL */
-.shell{display:flex;flex-direction:column;height:100%;background:var(--teal-mist);}
+.shell{
+  display:flex;flex-direction:column;
+  /* dvh fills the actual visible viewport on iOS PWA correctly */
+  height:100dvh;
+  /* fallbacks for older browsers */
+  height:-webkit-fill-available;
+  height:100vh;
+  height:100dvh;
+  background:var(--teal-mist);
+}
 .hdr{flex-shrink:0;background:linear-gradient(150deg,var(--teal-deep),var(--teal) 55%,var(--teal-light));padding:calc(max(46px,var(--st)) + 6px) 20px 24px;position:relative;overflow:hidden;}
 .hdr::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.05);top:-100px;right:-80px;}
 .hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
@@ -66,11 +80,34 @@ body{touch-action:pan-x pan-y;}
 .ptrack{margin-top:11px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;}
 .pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,rgba(255,255,255,.5),#fff);transition:width .9s cubic-bezier(.4,0,.2,1);}
 
-.scroll{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:14px 13px 16px;display:flex;flex-direction:column;gap:13px;min-height:0;}
+.scroll{
+  flex:1 1 0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
+  padding:14px 13px 16px;
+  display:flex;flex-direction:column;gap:13px;
+  min-height:0;  /* critical: lets flex child shrink below content size */
+}
 .scroll::-webkit-scrollbar{display:none;}
 
-.nav{flex-shrink:0;background:#fff;border-top:1px solid #ddf0f0;display:flex;height:calc(var(--nav-h) + var(--sb));padding-bottom:var(--sb);box-shadow:0 -2px 16px rgba(8,107,107,.09);}
-.nb{flex:1;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text-soft);font-size:9.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:color .14s;height:var(--nav-h);}
+.nav{
+  flex-shrink:0;
+  background:#fff;
+  border-top:1px solid #ddf0f0;
+  display:flex;
+  /* The nav icon area is always --nav-h tall.
+     Below it we add real bottom safe area so content
+     clears the iPhone home indicator perfectly. */
+  padding-bottom:var(--real-sb);
+  box-shadow:0 -2px 16px rgba(8,107,107,.09);
+}
+.nb{
+  flex:1;border:none;background:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;padding-top:4px;
+  color:var(--text-soft);font-size:9.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;
+  transition:color .14s;
+  height:var(--nav-h); /* icon area fixed height, separate from padding */
+}
 .nb.on{color:var(--teal-deep);}
 .nb svg{stroke-width:1.8;}
 
@@ -601,6 +638,28 @@ function scheduleNotif(){
 }
 
 // ── INIT ──
+// Measure safe-area-inset-bottom on iOS PWA (sometimes env() returns 0 incorrectly)
+function measureSafeArea(){
+  // iOS PWA home indicator is ~34px. Use that as base, fallback to env() reading
+  let realSB=20; // default fallback
+  try{
+    const computed=window.getComputedStyle(document.documentElement);
+    // try to read the env() variable that was computed
+    const sb=computed.getPropertyValue('--sb').trim();
+    if(sb && sb!=='0px'){
+      realSB=parseInt(sb)||20;
+    } else {
+      // on iPhone, when env() fails, use fixed 34px (home indicator height)
+      const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isStandalone=window.navigator.standalone===true;
+      if(isIOS && isStandalone) realSB=34;
+    }
+  }catch(e){}
+  document.documentElement.style.setProperty('--real-sb', realSB+'px');
+}
+measureSafeArea();
+window.addEventListener('orientationchange',()=>{setTimeout(measureSafeArea,100);});
+
 load();
 window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('splash').classList.add('gone'),1600);});
 renderAll();
