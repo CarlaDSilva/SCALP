@@ -38,7 +38,7 @@ body{
   position:fixed;
   top:0;right:0;bottom:0;left:0;
   overflow:hidden;
-  font-family:'Outfit',sans-serif;color:var(--text-dark);background:var(--teal-deep);
+  font-family:'Outfit',sans-serif;color:var(--text-dark);background:#fff;
   touch-action:pan-x pan-y;
 }
 
@@ -59,10 +59,15 @@ body{
 /* SHELL */
 .shell{
   display:flex;flex-direction:column;
-  height:100%;       /* body is now pinned to real viewport, so 100% is correct */
+  height:100%;
   width:100%;
   background:var(--teal-mist);
   overflow:hidden;
+  /* Reserve the iOS home-indicator area here, at the container level.
+     This pushes the nav up to sit exactly above the indicator: no gap,
+     no floating, and the nav itself stays the same compact height. */
+  padding-bottom:var(--sb);
+  box-sizing:border-box;
 }
 .hdr{flex-shrink:0;background:linear-gradient(150deg,var(--teal-deep),var(--teal) 55%,var(--teal-light));padding:calc(max(46px,var(--st)) + 6px) 20px 24px;position:relative;overflow:hidden;}
 .hdr::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.05);top:-100px;right:-80px;}
@@ -94,9 +99,6 @@ body{
   background:#fff;
   border-top:1px solid #ddf0f0;
   display:flex;
-  /* Safe-area handled INSIDE the nav: white background extends under the
-     home indicator, so there is no separate empty rectangle below it. */
-  padding-bottom:var(--sb);
   box-shadow:0 -2px 16px rgba(8,107,107,.09);
 }
 .nb{
