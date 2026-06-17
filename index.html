@@ -94,19 +94,16 @@ body{touch-action:pan-x pan-y;}
   background:#fff;
   border-top:1px solid #ddf0f0;
   display:flex;
-  /* The nav icon area is always --nav-h tall.
-     Below it we add real bottom safe area so content
-     clears the iPhone home indicator perfectly. */
-  padding-bottom:var(--real-sb);
+  /* Nav sits flush at the very bottom, no extra space below it */
   box-shadow:0 -2px 16px rgba(8,107,107,.09);
 }
 .nb{
   flex:1;border:none;background:none;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;padding-top:4px;
+  gap:2px;
   color:var(--text-soft);font-size:9.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;
   transition:color .14s;
-  height:var(--nav-h); /* icon area fixed height, separate from padding */
+  height:var(--nav-h);
 }
 .nb.on{color:var(--teal-deep);}
 .nb svg{stroke-width:1.8;}
@@ -213,12 +210,17 @@ canvas{display:block;}
 .sheet::-webkit-scrollbar{display:none;}
 .overlay.on .sheet{transform:translateY(0);}
 .shandle{width:36px;height:4px;border-radius:99px;background:var(--teal-pale);margin:13px auto 0;}
+.shead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 0;}
+.shead .stitle{padding:0;}
+.sclose{width:34px;height:34px;border-radius:50%;border:none;background:var(--teal-mist);color:var(--text-mid);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .14s;}
+.sclose:active{background:var(--teal-pale);}
 .stitle{font-family:'Playfair Display',serif;font-size:21px;padding:14px 20px 0;}
 .ssec{padding:13px 20px 0;}
 .slbl{font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-soft);margin-bottom:7px;}
 .sdiv{height:1px;background:var(--teal-mist);margin:13px 20px 0;}
 .tinput{width:100%;padding:11px 13px;border:1.5px solid var(--teal-pale);border-radius:11px;outline:none;font-family:'Outfit',sans-serif;font-size:16px;color:var(--text-dark);background:var(--teal-mist);transition:border-color .16s;}
 .tinput:focus{border-color:var(--teal);}
+input[type=date].tinput{-webkit-appearance:none;appearance:none;min-height:44px;font-family:'Outfit',sans-serif;}
 .irow{display:flex;gap:7px;}
 .iadd{padding:11px 14px;border-radius:11px;border:1.5px solid var(--teal-pale);background:var(--teal-mist);color:var(--teal-deep);font-size:19px;font-weight:700;cursor:pointer;line-height:1;}
 .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
@@ -259,33 +261,60 @@ textarea.tinput{resize:none;min-height:70px;}
 <div class="overlay" id="ov">
   <div class="sheet" id="sh">
     <div class="shandle"></div>
-    <div class="stitle" id="shTitle">Registrar lavado</div>
+    <div class="shead">
+      <div class="stitle" id="shTitle">Registrar lavado</div>
+      <button class="sclose" onclick="closeModal()" aria-label="Cerrar sin guardar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="ssec">
+      <div class="slbl">Fecha del lavado</div>
+      <input type="date" class="tinput" id="dateIn">
+    </div>
+
+    <div class="sdiv"></div>
     <div class="ssec">
       <div class="slbl">Champu usado</div>
       <div class="irow"><input class="tinput" id="shampooIn" placeholder="Escribe o selecciona..."><button class="iadd" onclick="addShampoo()">+</button></div>
       <div class="pills" id="shPills"></div>
     </div>
+
+    <div class="sdiv"></div>
+    <div class="ssec">
+      <div class="slbl">Motivo del lavado</div>
+      <div class="orow" id="r_reason">
+        <button class="ob" data-v="0">Normal</button><button class="ob" data-v="1">Playa</button><button class="ob" data-v="2">Piscina</button><button class="ob" data-v="3">Deporte</button><button class="ob" data-v="4">Otro</button>
+      </div>
+    </div>
+
     <div class="sdiv"></div>
     <div class="ssec"><div class="slbl">Cuero cabelludo antes</div><div class="orow" id="r_scalp">
       <button class="ob" data-v="1">Muy graso</button><button class="ob" data-v="2">Graso</button><button class="ob" data-v="3">Normal</button><button class="ob" data-v="4">Limpio</button></div></div>
+
     <div class="sdiv"></div>
     <div class="ssec"><div class="slbl">Costras antes</div><div class="orow" id="r_costra">
-      <button class="ob" data-v="0">Ninguna</button><button class="ob" data-v="1">Pocas</button><button class="ob" data-v="2">Muchas</button></div></div>
+      <button class="ob" data-v="0">Ninguna</button><button class="ob" data-v="1">Pocas</button><button class="ob" data-v="2">Muchas</button><button class="ob" data-v="3">No se</button></div></div>
+
     <div class="sdiv"></div>
     <div class="ssec"><div class="slbl">Costras despues del lavado</div><div class="orow" id="r_costraAfter">
-      <button class="ob" data-v="0">Mejoro</button><button class="ob" data-v="1">Igual</button><button class="ob" data-v="2">Peor</button></div></div>
+      <button class="ob" data-v="0">Mejoro</button><button class="ob" data-v="1">Igual</button><button class="ob" data-v="2">Peor</button><button class="ob" data-v="3">No se</button></div></div>
+
     <div class="sdiv"></div>
     <div class="ssec"><div class="slbl">Secado</div><div class="dgrid" id="r_dryer">
       <div class="dopt" data-v="0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="2" stroke-linecap="round"><path d="M17 8l4 4-4 4"/><path d="M3 12h18"/></svg><div class="dlbl">Aire frio</div></div>
       <div class="dopt" data-v="1"><svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg><div class="dlbl">Tibio</div></div>
       <div class="dopt" data-v="2"><svg viewBox="0 0 24 24" fill="none" stroke="var(--choc-warm)" stroke-width="2" stroke-linecap="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 002.5 2.5z"/></svg><div class="dlbl">Caliente</div></div>
-      <div class="dopt" data-v="3"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-soft)" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><div class="dlbl">Sin secar</div></div>
+      <div class="dopt" data-v="3"><svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="2" stroke-linecap="round"><path d="M3 12h3m12 0h3"/><path d="M7 8c0-2 1.5-3 2.5-3S12 6 12 8s-1.5 3-2.5 3"/><path d="M14 16c0 2 1.5 3 2.5 3s2.5-1 2.5-3-1.5-3-2.5-3"/></svg><div class="dlbl">Al aire</div></div>
     </div></div>
+
     <div class="sdiv"></div>
     <div class="ssec" id="ndSec"><div class="slbl">Como quedo al dia siguiente <span class="badge">OPCIONAL</span></div><div class="orow" id="r_nextDay">
       <button class="ob" data-v="0">Bien</button><button class="ob" data-v="1">Regular</button><button class="ob" data-v="2">Graso</button><button class="ob" data-v="3">Muy graso</button></div></div>
+
     <div class="sdiv"></div>
     <div class="ssec"><div class="slbl">Notas <span class="badge">OPCIONAL</span></div><textarea class="tinput" id="notesIn" placeholder="Aplique aceite antes, agua fria..."></textarea></div>
+
     <button class="btnc" id="shConfirm" onclick="saveWash()">Guardar</button>
   </div>
 </div>
@@ -401,19 +430,37 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){toast(
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600);}
 
 // ── MODAL ──
-let ms={shampoo:null,scalp:null,costra:null,costraAfter:null,dryer:null,nextDay:null};
+let ms={shampoo:null,reason:null,scalp:null,costra:null,costraAfter:null,dryer:null,nextDay:null,date:null,excludeFromPrediction:false};
 let editIdx=null;
 function openModal(idx=null){
   editIdx=idx;
   const w=idx!=null?D.washes[idx]:null;
-  ms={shampoo:w?w.shampoo:null,scalp:w?w.scalp:null,costra:w?w.costra:null,costraAfter:w?w.costraAfter:null,dryer:w?w.dryer:null,nextDay:w?w.nextDay:null};
+  ms={
+    shampoo:w?w.shampoo:null,
+    reason:w&&w.reason!=null?w.reason:null,
+    scalp:w?w.scalp:null,
+    costra:w?w.costra:null,
+    costraAfter:w?w.costraAfter:null,
+    dryer:w?w.dryer:null,
+    nextDay:w?w.nextDay:null,
+    date:w?w.date:new Date().toISOString(),
+    excludeFromPrediction:w?!!w.excludeFromPrediction:false
+  };
   document.getElementById('shTitle').textContent=idx!=null?'Editar lavado':'Registrar lavado';
   document.getElementById('shConfirm').textContent=idx!=null?'Guardar cambios':'Guardar';
   document.getElementById('shampooIn').value=w?w.shampoo:'';
   document.getElementById('notesIn').value=w&&w.notes?w.notes:'';
+  // date input expects yyyy-mm-dd in local time
+  const dt=new Date(ms.date);
+  const localDate=new Date(dt.getTime()-dt.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  document.getElementById('dateIn').value=localDate;
+  // reset all buttons
   document.querySelectorAll('.ob,.dopt').forEach(b=>b.classList.remove('on'));
   renderPills();
-  ['scalp','costra','costraAfter','nextDay'].forEach(t=>{if(ms[t]!=null){const b=document.querySelector(`#r_${t} [data-v="${ms[t]}"]`);if(b)b.classList.add('on');}});
+  // restore selections from ms
+  ['reason','scalp','costra','costraAfter','nextDay'].forEach(t=>{
+    if(ms[t]!=null){const b=document.querySelector(`#r_${t} [data-v="${ms[t]}"]`);if(b)b.classList.add('on');}
+  });
   if(ms.dryer!=null){const b=document.querySelector(`#r_dryer [data-v="${ms.dryer}"]`);if(b)b.classList.add('on');}
   document.getElementById('ndSec').style.display=(D.washes.length>0||idx!=null)?'block':'none';
   document.getElementById('ov').classList.add('on');
@@ -446,10 +493,59 @@ function saveWash(){
   const txt=document.getElementById('shampooIn').value.trim();
   const shampoo=txt||ms.shampoo||'Sin champu';
   if(txt&&!D.shampoos.includes(txt))D.shampoos.push(txt);
-  const entry={date:editIdx!=null?D.washes[editIdx].date:new Date().toISOString(),shampoo,scalp:ms.scalp,costra:ms.costra,costraAfter:ms.costraAfter,dryer:ms.dryer,nextDay:ms.nextDay,notes:document.getElementById('notesIn').value.trim()};
+
+  // Build date from the date input, keeping time-of-day if editing same day
+  let isoDate;
+  const dateVal=document.getElementById('dateIn').value;
+  if(dateVal){
+    if(editIdx!=null){
+      // keep original time, change only the day
+      const orig=new Date(D.washes[editIdx].date);
+      const [y,m,d]=dateVal.split('-').map(Number);
+      const nd=new Date(orig);nd.setFullYear(y,m-1,d);
+      isoDate=nd.toISOString();
+    } else {
+      const today=new Date();
+      const [y,m,d]=dateVal.split('-').map(Number);
+      // if the chosen day is today, keep current time; else noon of that day
+      const isToday=(y===today.getFullYear()&&m-1===today.getMonth()&&d===today.getDate());
+      const nd=isToday?today:new Date(y,m-1,d,12,0,0);
+      isoDate=nd.toISOString();
+    }
+  } else {
+    isoDate=editIdx!=null?D.washes[editIdx].date:new Date().toISOString();
+  }
+
+  // Ask about prediction exclusion for special-circumstance washes (playa/piscina/deporte/otro)
+  let exclude=ms.excludeFromPrediction;
+  const isSpecial=(ms.reason!=null && ms.reason!==0);
+  if(isSpecial){
+    // only ask if not already decided during this edit session
+    exclude=confirm('Este lavado es por una circunstancia especial (playa, piscina, deporte...).\n\n¿Excluirlo del calculo de cuanto te dura el pelo limpio?\n\nAceptar = excluir (recomendado)\nCancelar = contar como lavado normal');
+  } else {
+    exclude=false;
+  }
+
+  const entry={
+    date:isoDate,
+    shampoo,
+    reason:ms.reason,
+    scalp:ms.scalp,
+    costra:ms.costra,
+    costraAfter:ms.costraAfter,
+    dryer:ms.dryer,
+    nextDay:ms.nextDay,
+    notes:document.getElementById('notesIn').value.trim(),
+    excludeFromPrediction:exclude
+  };
+
   if(editIdx!=null)D.washes[editIdx]=entry;else D.washes.push(entry);
-  save();closeModal();renderAll();scheduleNotif();
-  toast(editIdx!=null?'Lavado actualizado':'Lavado registrado');
+  // always keep chronological order so durations compute correctly
+  D.washes.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  save();closeModal();
+  editIdx=null;
+  renderAll();scheduleNotif();
+  toast('Lavado guardado');
 }
 function deleteWash(i){if(!confirm('Eliminar este registro?'))return;D.washes.splice(i,1);save();renderAll();toast('Registro eliminado');}
 
@@ -468,15 +564,41 @@ function showTab(t){
 }
 
 // ── ENGINE ──
-function withDur(){const w=[...D.washes].sort((a,b)=>new Date(a.date)-new Date(b.date));for(let i=1;i<w.length;i++)w[i-1].dur=(new Date(w[i].date)-new Date(w[i-1].date))/86400000;return w;}
-function predict(){const w=withDur().filter(x=>x.dur!=null);if(!w.length)return null;let tw=0,td=0;w.forEach((e,i)=>{const wt=Math.pow(1.5,i);td+=e.dur*wt;tw+=wt;});const base=td/tw;const sm={};w.forEach(e=>{(sm[e.shampoo]=sm[e.shampoo]||[]).push(e.dur);});const last=D.washes.length?D.washes[D.washes.length-1].shampoo:null;let adj=0;if(last&&sm[last]&&sm[last].length>=2){const sa=sm[last].reduce((a,b)=>a+b,0)/sm[last].length;adj=(sa-base)*0.4;}return{days:Math.max(0.4,base+adj),base,sm};}
+// Returns a NEW array of shallow copies with .dur computed (never mutates D.washes).
+// Duration = days until the NEXT non-excluded wash (special washes don't reset the clock).
+function withDur(){
+  const sorted=[...D.washes].sort((a,b)=>new Date(a.date)-new Date(b.date)).map(w=>({...w}));
+  for(let i=0;i<sorted.length;i++){
+    if(i<sorted.length-1){
+      sorted[i].dur=(new Date(sorted[i+1].date)-new Date(sorted[i].date))/86400000;
+    }else{
+      sorted[i].dur=null; // last one is "current"
+    }
+  }
+  return sorted;
+}
+// Only non-excluded washes feed the prediction of the natural grease cycle.
+function predict(){
+  const all=withDur();
+  const w=all.filter(x=>x.dur!=null && !x.excludeFromPrediction);
+  if(!w.length)return null;
+  let tw=0,td=0;
+  w.forEach((e,i)=>{const wt=Math.pow(1.5,i);td+=e.dur*wt;tw+=wt;});
+  const base=td/tw;
+  const sm={};
+  w.forEach(e=>{(sm[e.shampoo]=sm[e.shampoo]||[]).push(e.dur);});
+  const last=D.washes.length?[...D.washes].sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-1)[0].shampoo:null;
+  let adj=0;
+  if(last&&sm[last]&&sm[last].length>=2){const sa=sm[last].reduce((a,b)=>a+b,0)/sm[last].length;adj=(sa-base)*0.4;}
+  return{days:Math.max(0.4,base+adj),base,sm};
+}
 function bestShampoo(sm){if(!sm)return'--';let b=null,bv=0;Object.entries(sm).forEach(([n,d])=>{const a=d.reduce((x,y)=>x+y,0)/d.length;if(a>bv){bv=a;b=n;}});return b||'--';}
 function fmt(d){if(d==null)return'?';return d<1?Math.round(d*24)+'h':d.toFixed(1)+'d';}
 function fmtDate(d){const n=new Date(),t=new Date(d),df=Math.floor((n-t)/86400000);if(df===0)return'Hoy';if(df===1)return'Ayer';return t.toLocaleDateString('es-ES',{day:'numeric',month:'short'});}
 function todayWash(){const t=new Date().toDateString();return D.washes.some(w=>new Date(w.date).toDateString()===t);}
-function status(){if(!D.washes.length)return null;const last=D.washes[D.washes.length-1];const p=predict();const el=(Date.now()-new Date(last.date))/86400000;const pd=p?p.days:1;return{el,pd,pct:Math.min(1,el/pd),last,p};}
+function status(){if(!D.washes.length)return null;const sorted=[...D.washes].sort((a,b)=>new Date(a.date)-new Date(b.date));const last=sorted[sorted.length-1];const p=predict();const el=(Date.now()-new Date(last.date))/86400000;const pd=p?p.days:1;return{el,pd,pct:Math.min(1,el/pd),last,p};}
 
-const scalpL=['','Muy graso','Graso','Normal','Limpio'],costraL=['Sin costras','Pocas costras','Muchas costras'],costraAL=['Mejoro','Igual','Peor'],dryerL=['Aire frio','Tibio','Caliente','Sin secar'],ndL=['Bien','Regular','Graso','Muy graso'];
+const scalpL=['','Muy graso','Graso','Normal','Limpio'],costraL=['Sin costras','Pocas costras','Muchas costras','No se'],costraAL=['Mejoro','Igual','Peor','No se'],dryerL=['Aire frio','Tibio','Caliente','Al aire'],ndL=['Bien','Regular','Graso','Muy graso'],reasonL=['Normal','Playa','Piscina','Deporte','Otro'];
 
 function renderAll(){renderHeader();renderLast();if(activeTab==='history')renderHistory();if(activeTab==='stats')renderStats();if(activeTab==='settings')renderSettings();}
 
@@ -496,12 +618,15 @@ function renderHeader(){
 function renderLast(){
   const el=document.getElementById('lastCard');
   if(!D.washes.length){el.innerHTML='<div class="empty"><p>Pulsa + para empezar</p></div>';return;}
-  const w=D.washes[D.washes.length-1];const tg=[];
+  const sorted=[...D.washes].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const w=sorted[sorted.length-1];const tg=[];
+  if(w.reason!=null&&w.reason!==0)tg.push(['w',reasonL[w.reason]]);
   if(w.scalp!=null)tg.push(['t',scalpL[w.scalp]]);
   if(w.costra!=null)tg.push(['w',costraL[w.costra]]);
   if(w.costraAfter!=null)tg.push(['g','Despues: '+costraAL[w.costraAfter]]);
   if(w.dryer!=null)tg.push(['t',dryerL[w.dryer]]);
   if(w.nextDay!=null)tg.push(['w','Sig dia: '+ndL[w.nextDay]]);
+  if(w.excludeFromPrediction)tg.push(['g','No cuenta para prediccion']);
   el.innerHTML=`<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px"><div style="font-size:15px;font-weight:600">${w.shampoo}</div><div style="font-size:11px;color:var(--text-soft)">${fmtDate(w.date)}</div></div><div class="tags">${tg.map(t=>`<span class="tag ${t[0]}">${t[1]}</span>`).join('')}</div>${w.notes?`<div style="font-size:12px;color:var(--text-mid);margin-top:6px;font-style:italic">${w.notes}</div>`:''}`;
 }
 
@@ -516,18 +641,22 @@ function renderHistory(){
   const sorted=[...filt].sort((a,b)=>new Date(b.date)-new Date(a.date));
   el.innerHTML=sorted.map((e,i)=>{
     const dur=durByDate[e.date];const tg=[];
+    if(e.reason!=null&&e.reason!==0)tg.push(['w',reasonL[e.reason]]);
     if(e.scalp!=null)tg.push(['t',scalpL[e.scalp]]);
     if(e.costra!=null)tg.push(['w',costraL[e.costra]]);
     if(e.costraAfter!=null)tg.push(['g','Despues: '+costraAL[e.costraAfter]]);
     if(e.dryer!=null)tg.push(['t',dryerL[e.dryer]]);
     if(e.nextDay!=null)tg.push(['w','Sig: '+ndL[e.nextDay]]);
+    if(e.excludeFromPrediction)tg.push(['g','No cuenta']);
     return`<div class="tli"><div class="tld ${i>0?'o':''}"></div><div class="tlb"><div class="tlh"><div class="tldate">${fmtDate(e.date)}</div>${dur!=null?`<div class="tldur">${fmt(dur)} limpio</div>`:`<div class="tldur" style="color:var(--teal-light)">actual</div>`}</div><div class="tlsh">${e.shampoo}</div>${tg.length?`<div class="tags">${tg.map(t=>`<span class="tag ${t[0]}">${t[1]}</span>`).join('')}</div>`:''}${e.notes?`<div class="tlnote">${e.notes}</div>`:''}<div class="tlact"><button class="tlbtn" onclick="openModal(${e.idx})">Editar</button><button class="tlbtn del" onclick="deleteWash(${e.idx})">Eliminar</button></div></div></div>`;
   }).join('');
 }
 function setFilter(v){filterShampoo=v;renderHistory();}
 
 function renderStats(){
-  const wd=withDur();const durs=wd.filter(x=>x.dur!=null);
+  const wd=withDur();
+  // For grease-cycle stats, only count non-excluded washes with a duration
+  const durs=wd.filter(x=>x.dur!=null && !x.excludeFromPrediction);
   drawEvo(durs);
   const p=predict();const sm=p?p.sm:{};
   const ent=Object.entries(sm).map(([n,d])=>({n,avg:d.reduce((a,b)=>a+b,0)/d.length,c:d.length})).sort((a,b)=>b.avg-a.avg);
@@ -577,8 +706,8 @@ function exportJSON(){
   triggerDownload(blob,fname('json'));markBackup();toast('Backup JSON descargado');
 }
 function exportCSV(){
-  const head=['fecha','champu','cuero_antes','costras_antes','costras_despues','secado','dia_siguiente','notas'];
-  const rows=D.washes.map(w=>[new Date(w.date).toLocaleString('es-ES'),w.shampoo,w.scalp!=null?scalpL[w.scalp]:'',w.costra!=null?costraL[w.costra]:'',w.costraAfter!=null?costraAL[w.costraAfter]:'',w.dryer!=null?dryerL[w.dryer]:'',w.nextDay!=null?ndL[w.nextDay]:'',(w.notes||'').replace(/"/g,'""')].map(v=>`"${v}"`).join(','));
+  const head=['fecha','champu','motivo','cuero_antes','costras_antes','costras_despues','secado','dia_siguiente','excluido_prediccion','notas'];
+  const rows=[...D.washes].sort((a,b)=>new Date(a.date)-new Date(b.date)).map(w=>[new Date(w.date).toLocaleString('es-ES'),w.shampoo,w.reason!=null?reasonL[w.reason]:'',w.scalp!=null?scalpL[w.scalp]:'',w.costra!=null?costraL[w.costra]:'',w.costraAfter!=null?costraAL[w.costraAfter]:'',w.dryer!=null?dryerL[w.dryer]:'',w.nextDay!=null?ndL[w.nextDay]:'',w.excludeFromPrediction?'Si':'No',(w.notes||'').replace(/"/g,'""')].map(v=>`"${v}"`).join(','));
   const csv='\uFEFF'+[head.join(','),...rows].join('\n');
   triggerDownload(new Blob([csv],{type:'text/csv;charset=utf-8'}),fname('csv'));markBackup();toast('Backup CSV descargado');
 }
@@ -638,28 +767,6 @@ function scheduleNotif(){
 }
 
 // ── INIT ──
-// Measure safe-area-inset-bottom on iOS PWA (sometimes env() returns 0 incorrectly)
-function measureSafeArea(){
-  // iOS PWA home indicator is ~34px. Use that as base, fallback to env() reading
-  let realSB=20; // default fallback
-  try{
-    const computed=window.getComputedStyle(document.documentElement);
-    // try to read the env() variable that was computed
-    const sb=computed.getPropertyValue('--sb').trim();
-    if(sb && sb!=='0px'){
-      realSB=parseInt(sb)||20;
-    } else {
-      // on iPhone, when env() fails, use fixed 34px (home indicator height)
-      const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isStandalone=window.navigator.standalone===true;
-      if(isIOS && isStandalone) realSB=34;
-    }
-  }catch(e){}
-  document.documentElement.style.setProperty('--real-sb', realSB+'px');
-}
-measureSafeArea();
-window.addEventListener('orientationchange',()=>{setTimeout(measureSafeArea,100);});
-
 load();
 window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('splash').classList.add('gone'),1600);});
 renderAll();
