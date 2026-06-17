@@ -1,27 +1,38 @@
 // Scalp Service Worker
-const CACHE = 'scalp-v4';
+const CACHE = 'scalp-v5';
 const ASSETS = ['./index.html','./manifest.json','./apple-touch-icon.png','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install', e => {
-  self.skipWaiting();
+  self.skipWaiting(); // activate new SW immediately
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(()=>{})));
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
-      .then(()=>self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
+// NETWORK-FIRST: always try to fetch the latest from the network.
+// Only fall back to cache when offline. This guarantees the app
+// updates by itself whenever you push a new version (no re-download).
 self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).catch(()=>caches.match('./index.html')))
+    fetch(e.request)
+      .then(res => {
+        // update cache with fresh copy
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
+        return res;
+      })
+      .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html')))
   );
 });
 
-// Messages from the page schedule a local notification via timeout.
-// NOTE: this only fires while the SW is alive; iOS may kill it. Best-effort only.
+// Best-effort local notifications (iOS may kill the SW, so not guaranteed)
 let timers = {};
 self.addEventListener('message', e => {
   const d = e.data || {};

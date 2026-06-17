@@ -28,19 +28,19 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 input,textarea{-webkit-user-select:text;user-select:text;}
 html{
-  height:100%;
   -webkit-text-size-adjust:100%;text-size-adjust:100%;
-  touch-action:manipulation;          /* kill double-tap zoom */
+  touch-action:manipulation;
   overscroll-behavior:none;
 }
 body{
-  height:100%;overflow:hidden;
+  /* Pin to all four edges so it fills the REAL visible area on iOS PWA.
+     height:100% fails here (leaves a gap / blocks scroll); inset:0 does not. */
+  position:fixed;
+  top:0;right:0;bottom:0;left:0;
+  overflow:hidden;
   font-family:'Outfit',sans-serif;color:var(--text-dark);background:var(--teal-deep);
-  touch-action:manipulation;
-  position:fixed;width:100%;                 /* lock body, no rubber-band of whole page */
+  touch-action:pan-x pan-y;
 }
-/* block pinch-zoom gesture */
-body{touch-action:pan-x pan-y;}
 
 /* SPLASH */
 #splash{position:fixed;inset:0;z-index:999;background:linear-gradient(150deg,var(--teal-deep),var(--teal) 60%,var(--teal-light));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .45s ease;}
@@ -59,13 +59,10 @@ body{touch-action:pan-x pan-y;}
 /* SHELL */
 .shell{
   display:flex;flex-direction:column;
-  /* dvh fills the actual visible viewport on iOS PWA correctly */
-  height:100dvh;
-  /* fallbacks for older browsers */
-  height:-webkit-fill-available;
-  height:100vh;
-  height:100dvh;
+  height:100%;       /* body is now pinned to real viewport, so 100% is correct */
+  width:100%;
   background:var(--teal-mist);
+  overflow:hidden;
 }
 .hdr{flex-shrink:0;background:linear-gradient(150deg,var(--teal-deep),var(--teal) 55%,var(--teal-light));padding:calc(max(46px,var(--st)) + 6px) 20px 24px;position:relative;overflow:hidden;}
 .hdr::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.05);top:-100px;right:-80px;}
@@ -81,11 +78,14 @@ body{touch-action:pan-x pan-y;}
 .pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,rgba(255,255,255,.5),#fff);transition:width .9s cubic-bezier(.4,0,.2,1);}
 
 .scroll{
-  flex:1 1 0;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
-  padding:14px 13px 16px;
+  flex:1 1 auto;
+  height:0;                 /* with flex:1 auto, height:0 forces it to take exactly leftover space -> reliable iOS scroll */
+  min-height:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  padding:14px 13px 18px;
   display:flex;flex-direction:column;gap:13px;
-  min-height:0;  /* critical: lets flex child shrink below content size */
 }
 .scroll::-webkit-scrollbar{display:none;}
 
@@ -94,7 +94,9 @@ body{touch-action:pan-x pan-y;}
   background:#fff;
   border-top:1px solid #ddf0f0;
   display:flex;
-  /* Nav sits flush at the very bottom, no extra space below it */
+  /* Safe-area handled INSIDE the nav: white background extends under the
+     home indicator, so there is no separate empty rectangle below it. */
+  padding-bottom:var(--sb);
   box-shadow:0 -2px 16px rgba(8,107,107,.09);
 }
 .nb{
@@ -206,7 +208,7 @@ canvas{display:block;}
 
 .overlay{position:fixed;inset:0;z-index:200;background:rgba(16,50,50,.55);backdrop-filter:blur(7px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .26s;}
 .overlay.on{opacity:1;pointer-events:all;}
-.sheet{width:100%;background:#fff;border-radius:22px 22px 0 0;padding:0 0 calc(20px + var(--sb));max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);}
+.sheet{width:100%;background:#fff;border-radius:22px 22px 0 0;padding:0 0 calc(20px + var(--sb));max-height:90%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);}
 .sheet::-webkit-scrollbar{display:none;}
 .overlay.on .sheet{transform:translateY(0);}
 .shandle{width:36px;height:4px;border-radius:99px;background:var(--teal-pale);margin:13px auto 0;}
@@ -743,10 +745,38 @@ function importJSON(e){
 
 function clearAll(){if(!confirm('Borrar TODOS los datos? No se puede deshacer.'))return;D={washes:[],shampoos:[],notifHours:2,lastBackup:null};save();renderAll();toast('Datos borrados');}
 
-// ── NOTIFICATIONS (Service Worker, best-effort) ──
+// ── NOTIFICATIONS (Service Worker, best-effort) + AUTO-UPDATE ──
 let swReg=null;
 if('serviceWorker'in navigator){
-  navigator.serviceWorker.register('sw.js').then(r=>{swReg=r;}).catch(()=>{});
+  navigator.serviceWorker.register('sw.js').then(r=>{
+    swReg=r;
+    // Check for a newer version every time the app opens / regains focus
+    r.update().catch(()=>{});
+    r.addEventListener('updatefound',()=>{
+      const nw=r.installing;
+      if(!nw)return;
+      nw.addEventListener('statechange',()=>{
+        // A new version is installed and ready -> activate it now
+        if(nw.state==='installed' && navigator.serviceWorker.controller){
+          nw.postMessage&&nw.postMessage({type:'skip'});
+          // the new SW called skipWaiting() on install; it will take control
+        }
+      });
+    });
+  }).catch(()=>{});
+
+  // When the new SW takes control, reload ONCE so you see the latest version
+  let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(reloaded)return;
+    reloaded=true;
+    window.location.reload();
+  });
+
+  // Re-check for updates whenever the app comes back to the foreground
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden && swReg)swReg.update().catch(()=>{});
+  });
 }
 async function enableNotif(){
   D.notifHours=Math.min(48,Math.max(1,parseInt(document.getElementById('notifH').value)||2));save();
