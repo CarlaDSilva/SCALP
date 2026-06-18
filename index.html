@@ -33,12 +33,10 @@ html{
   overscroll-behavior:none;
 }
 body{
-  /* Pin to all four edges so it fills the REAL visible area on iOS PWA.
-     height:100% fails here (leaves a gap / blocks scroll); inset:0 does not. */
   position:fixed;
   top:0;right:0;bottom:0;left:0;
   overflow:hidden;
-  font-family:'Outfit',sans-serif;color:var(--text-dark);background:#fff;
+  font-family:'Outfit',sans-serif;color:var(--text-dark);background:var(--teal-mist);
   touch-action:pan-x pan-y;
 }
 
@@ -56,20 +54,18 @@ body{
 .sp-dots i:nth-child(3){animation-delay:.36s;}
 @keyframes bounce{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-7px);opacity:1}}
 
-/* SHELL */
-.shell{
-  display:flex;flex-direction:column;
-  height:100%;
-  width:100%;
-  background:var(--teal-mist);
+/* SHELL — three absolutely-positioned regions pinned to the body.
+   No flex height math, no safe-area padding that creates colored strips.
+   The NAV is pinned to bottom:0 and its own white background simply
+   extends through the home-indicator area via padding. */
+.shell{position:absolute;inset:0;background:var(--teal-mist);overflow:hidden;}
+
+.hdr{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  background:linear-gradient(150deg,var(--teal-deep),var(--teal) 55%,var(--teal-light));
+  padding:calc(max(46px,var(--st)) + 6px) 20px 24px;
   overflow:hidden;
-  /* Reserve the iOS home-indicator area here, at the container level.
-     This pushes the nav up to sit exactly above the indicator: no gap,
-     no floating, and the nav itself stays the same compact height. */
-  padding-bottom:var(--sb);
-  box-sizing:border-box;
 }
-.hdr{flex-shrink:0;background:linear-gradient(150deg,var(--teal-deep),var(--teal) 55%,var(--teal-light));padding:calc(max(46px,var(--st)) + 6px) 20px 24px;position:relative;overflow:hidden;}
 .hdr::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.05);top:-100px;right:-80px;}
 .hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .hdr-logo{width:30px;height:30px;}
@@ -82,10 +78,13 @@ body{
 .ptrack{margin-top:11px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;}
 .pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,rgba(255,255,255,.5),#fff);transition:width .9s cubic-bezier(.4,0,.2,1);}
 
+/* Scroll region fills between header and nav. top/bottom set in JS-free CSS
+   via the measured header height variable and the nav height. */
 .scroll{
-  flex:1 1 auto;
-  height:0;                 /* with flex:1 auto, height:0 forces it to take exactly leftover space -> reliable iOS scroll */
-  min-height:0;
+  position:absolute;
+  left:0;right:0;
+  top:var(--hdr-h,150px);
+  bottom:calc(var(--nav-h) + var(--sb));
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain;
@@ -94,11 +93,17 @@ body{
 }
 .scroll::-webkit-scrollbar{display:none;}
 
+/* NAV pinned to the real bottom edge. Height = icons (--nav-h) PLUS the
+   safe area, but the safe area is padding INSIDE the same white box, so the
+   white reaches the screen's bottom edge — no transparent or colored strip. */
 .nav{
-  flex-shrink:0;
+  position:absolute;
+  bottom:0;left:0;right:0;z-index:10;
   background:#fff;
   border-top:1px solid #ddf0f0;
   display:flex;
+  height:calc(var(--nav-h) + var(--sb));
+  padding-bottom:var(--sb);
   box-shadow:0 -2px 16px rgba(8,107,107,.09);
 }
 .nb{
@@ -604,7 +609,7 @@ function status(){if(!D.washes.length)return null;const sorted=[...D.washes].sor
 
 const scalpL=['','Muy graso','Graso','Normal','Limpio'],costraL=['Sin costras','Pocas costras','Muchas costras','No se'],costraAL=['Mejoro','Igual','Peor','No se'],dryerL=['Aire frio','Tibio','Caliente','Al aire'],ndL=['Bien','Regular','Graso','Muy graso'],reasonL=['Normal','Playa','Piscina','Deporte','Otro'];
 
-function renderAll(){renderHeader();renderLast();if(activeTab==='history')renderHistory();if(activeTab==='stats')renderStats();if(activeTab==='settings')renderSettings();}
+function renderAll(){renderHeader();renderLast();if(activeTab==='history')renderHistory();if(activeTab==='stats')renderStats();if(activeTab==='settings')renderSettings();if(typeof syncHeaderHeight==='function')syncHeaderHeight();}
 
 function renderHeader(){
   const st=status();
@@ -799,12 +804,26 @@ function scheduleNotif(){
 }
 
 // ── INIT ──
+// Measure the header's real height (varies with the notch / status bar)
+// and expose it as --hdr-h so the scroll region starts exactly below it.
+function syncHeaderHeight(){
+  const h=document.querySelector('.hdr');
+  if(h)document.documentElement.style.setProperty('--hdr-h', h.offsetHeight+'px');
+}
 load();
-window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('splash').classList.add('gone'),1600);});
 renderAll();
+syncHeaderHeight();
+// run again after fonts/layout settle and on any resize/rotate
+requestAnimationFrame(syncHeaderHeight);
+window.addEventListener('resize',syncHeaderHeight);
+window.addEventListener('orientationchange',()=>setTimeout(syncHeaderHeight,200));
+window.addEventListener('load',()=>{
+  syncHeaderHeight();
+  setTimeout(()=>document.getElementById('splash').classList.add('gone'),1600);
+});
 setInterval(renderHeader,60000);
-// reschedule when app regains focus
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderHeader();scheduleNotif();}});
+// reschedule + resync when app regains focus
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderHeader();scheduleNotif();syncHeaderHeight();}});
 </script>
 </body>
 </html>
