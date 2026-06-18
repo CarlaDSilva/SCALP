@@ -21,9 +21,7 @@
   --nav-h:60px;
   --sb:env(safe-area-inset-bottom,0px);
   --st:env(safe-area-inset-top,0px);
-  /* iOS PWA: safe-area-inset-bottom can be 0 even with home indicator.
-     We use a JS-measured value set on :root via --real-sb, falling back to 20px */
-  --real-sb:20px;
+  --sbx:env(safe-area-inset-bottom,0px); /* resolved/overridden by JS for reliability */
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 input,textarea{-webkit-user-select:text;user-select:text;}
@@ -84,7 +82,7 @@ body{
   position:absolute;
   left:0;right:0;
   top:var(--hdr-h,150px);
-  bottom:calc(var(--nav-h) + var(--sb));
+  bottom:calc(var(--nav-h) + var(--sbx));
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain;
@@ -102,8 +100,8 @@ body{
   background:#fff;
   border-top:1px solid #ddf0f0;
   display:flex;
-  height:calc(var(--nav-h) + var(--sb));
-  padding-bottom:var(--sb);
+  height:calc(var(--nav-h) + var(--sbx));
+  padding-bottom:var(--sbx);
   box-shadow:0 -2px 16px rgba(8,107,107,.09);
 }
 .nb{
@@ -804,26 +802,42 @@ function scheduleNotif(){
 }
 
 // ── INIT ──
-// Measure the header's real height (varies with the notch / status bar)
-// and expose it as --hdr-h so the scroll region starts exactly below it.
+// Resolve the bottom safe area reliably. env() can report 0 in iOS PWA
+// before interaction, which leaves a visible strip under the nav.
+function syncSafeArea(){
+  // Measure what env() actually resolves to using a probe element
+  const probe=document.createElement('div');
+  probe.style.cssText='position:fixed;bottom:0;left:0;width:0;height:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none;';
+  document.body.appendChild(probe);
+  let measured=probe.getBoundingClientRect().height;
+  probe.remove();
+  // Fallback: notched iPhone running as installed PWA -> home indicator ~34px
+  if(!measured || measured<1){
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+    const standalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
+    const hasNotch=window.screen && Math.max(window.screen.width,window.screen.height)>=812; // X and newer
+    if(isIOS && standalone && hasNotch) measured=34;
+  }
+  document.documentElement.style.setProperty('--sbx', measured+'px');
+}
+
 function syncHeaderHeight(){
   const h=document.querySelector('.hdr');
   if(h)document.documentElement.style.setProperty('--hdr-h', h.offsetHeight+'px');
 }
 load();
 renderAll();
+syncSafeArea();
 syncHeaderHeight();
-// run again after fonts/layout settle and on any resize/rotate
-requestAnimationFrame(syncHeaderHeight);
-window.addEventListener('resize',syncHeaderHeight);
-window.addEventListener('orientationchange',()=>setTimeout(syncHeaderHeight,200));
+requestAnimationFrame(()=>{syncSafeArea();syncHeaderHeight();});
+window.addEventListener('resize',()=>{syncSafeArea();syncHeaderHeight();});
+window.addEventListener('orientationchange',()=>setTimeout(()=>{syncSafeArea();syncHeaderHeight();},200));
 window.addEventListener('load',()=>{
-  syncHeaderHeight();
+  syncSafeArea();syncHeaderHeight();
   setTimeout(()=>document.getElementById('splash').classList.add('gone'),1600);
 });
 setInterval(renderHeader,60000);
-// reschedule + resync when app regains focus
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderHeader();scheduleNotif();syncHeaderHeight();}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderHeader();scheduleNotif();syncSafeArea();syncHeaderHeight();}});
 </script>
 </body>
 </html>
